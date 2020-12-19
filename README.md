@@ -1,2 +1,2 @@
-# api-service
+# API Service
 General API service.
