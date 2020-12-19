@@ -1,2 +1,2 @@
 # api-service
-src/bin
+General API service.
