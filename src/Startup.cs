@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace src
+namespace ApiService
 {
     public class Startup
     {
@@ -30,7 +30,7 @@ namespace src
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "src", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API Service", Version = "v1" });
             });
         }
 
