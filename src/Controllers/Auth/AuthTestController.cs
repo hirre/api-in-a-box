@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace ApiService.Controllers.Auth
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [Authorize]
     public class AuthTestController : ControllerBase
     {

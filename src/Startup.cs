@@ -63,7 +63,9 @@ namespace ApiService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    "controller",
+                    "api/{controller}");
             });
         }
     }
