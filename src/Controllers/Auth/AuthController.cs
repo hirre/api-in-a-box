@@ -1,10 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ApiService.Contexts;
+using ApiService.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ApiService.Controllers
@@ -14,15 +15,28 @@ namespace ApiService.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
+        private readonly DatabaseContext _dbContext;
 
-        public AuthController(ILogger<AuthController> logger)
+        public AuthController(ILogger<AuthController> logger, DatabaseContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         [HttpPost]
-        public async Task<string> GenerateToken()
+        public async Task<string> Auth([FromBody] User user)
         {
+            var loadedUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName);
+
+            if (loadedUser == null)
+                throw new Exception("Access denied.");
+
+            if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
+                throw new Exception("Access denied.");
+
+            //BCrypt.Net.BCrypt.HashPassword()
+            //BCrypt.Net.BCrypt.Verify()
+
             var myTestSecret = "thisismysecret123456789123456789"; // String needs to be atleast 32 in length
             var myTestSecretSecString = new SecureString();
 
@@ -35,12 +49,14 @@ namespace ApiService.Controllers
             var myAudience = "http://testaudience.com";
 
             var claimType = "TestType";
-            var claims = new Claim[] { new Claim(claimType, "Hello"), 
-                            new Claim("AnotherType", "Something") };
+            var claims = new Claim[] 
+            { 
+                new Claim(claimType, "Hello"), 
+                new Claim("AnotherType", "Something") 
+            };
 
             var token = TokenFactory.Generate(myTestSecretSecString, myIssuer, myAudience, 
-                        DateTime.Now.AddDays(1), 
-                        new Claim[] { new Claim("test", "testvalue")});
+                        DateTime.Now.AddDays(1), claims);
 
             return await Task.FromResult(token);
         }
