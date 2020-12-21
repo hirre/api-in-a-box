@@ -1,5 +1,4 @@
 using System;
-using System.Security;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ApiService.Contexts;
@@ -16,9 +15,11 @@ namespace ApiService.Controllers
     {
         private readonly ILogger<AuthController> _logger;
         private readonly DatabaseContext _dbContext;
+        private readonly Secret _secret;
 
-        public AuthController(ILogger<AuthController> logger, DatabaseContext dbContext)
+        public AuthController(Secret secret, ILogger<AuthController> logger, DatabaseContext dbContext)
         {
+            _secret = secret;
             _logger = logger;
             _dbContext = dbContext;
         }
@@ -33,27 +34,15 @@ namespace ApiService.Controllers
 
             if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
                 throw new Exception("Access denied.");
-
-            var myTestSecret = "thisismysecret123456789123456789"; // String needs to be atleast 32 in length
-            var myTestSecretSecString = new SecureString();
-
-            foreach (var c in myTestSecret.ToCharArray())
-            {
-                myTestSecretSecString.AppendChar(c);
-            }
-
-            var myIssuer = "http://test.com";
-            var myAudience = "http://testaudience.com";
-
-            var claimType = "TestType";
+                        
             var claims = new Claim[] 
-            { 
-                new Claim(claimType, "Hello"), 
-                new Claim("AnotherType", "Something") 
+            {
+                new Claim("id", "" + loadedUser.Id),
+                new Claim(ClaimTypes.Name, loadedUser.UserName) 
             };
 
-            var token = TokenFactory.Generate(myTestSecretSecString, myIssuer, myAudience, 
-                        DateTime.Now.AddDays(1), claims);
+            var token = TokenFactory.Generate(_secret.Token.Key, _secret.Token.Issuer, _secret.Token.Issuer, 
+                        DateTime.Now.AddHours(1), claims);
 
             return await Task.FromResult(token);
         }

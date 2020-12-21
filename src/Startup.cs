@@ -1,20 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Security;
 using System.Text;
-using System.Threading.Tasks;
 using ApiService.Contexts;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -35,8 +28,19 @@ namespace ApiService
             services.AddDbContext<DatabaseContext>(options =>
                     options.UseNpgsql(Configuration["ConnectionString"]));
 
-            // Just for test
-            var key = Encoding.ASCII.GetBytes("thisismysecret123456789123456789");
+            var secret = new Secret();
+            var tokenSecKey = new SecureString();
+            var tokenKeyBytes = Encoding.ASCII.GetBytes(Configuration["Token:Key"]);
+
+            foreach (var c in Configuration["Token:Key"].ToCharArray())
+            {
+                tokenSecKey.AppendChar(c);
+            }
+
+            // Set key
+            secret.Token.Key = tokenSecKey;
+
+            services.AddSingleton(x => secret);
 
             services.AddAuthentication(x =>
             {
@@ -49,8 +53,9 @@ namespace ApiService
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidIssuer = Configuration["Token:Issuer"],
                     ValidateIssuerSigningKey = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = new SymmetricSecurityKey(tokenKeyBytes),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
@@ -88,5 +93,16 @@ namespace ApiService
                 endpoints.MapControllers();
             });
         }
+    }
+
+    public class Secret
+    {
+        public TokenData Token { get; } = new TokenData();
+
+        public class TokenData
+        {
+            public SecureString Key { get; set; }
+            public string Issuer { get; set; }
+        } 
     }
 }
