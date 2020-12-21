@@ -83,6 +83,7 @@ namespace ApiService
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "src v1"));
             }
 
+            app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthorization();

@@ -16,4 +16,10 @@
     <ProjectReference Include="..\Contexts\Contexts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ServerCertificate.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
