@@ -34,9 +34,6 @@ namespace ApiService.Controllers
             if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
                 throw new Exception("Access denied.");
 
-            //BCrypt.Net.BCrypt.HashPassword()
-            //BCrypt.Net.BCrypt.Verify()
-
             var myTestSecret = "thisismysecret123456789123456789"; // String needs to be atleast 32 in length
             var myTestSecretSecString = new SecureString();
 

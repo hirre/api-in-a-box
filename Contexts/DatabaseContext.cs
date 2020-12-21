@@ -1,5 +1,10 @@
 ﻿using ApiService.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ApiService.Contexts
 {
@@ -10,13 +15,14 @@ namespace ApiService.Contexts
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //builder.Ignore<AbstractDbBase>();
-            //builder.Entity<DatabaseContext>()
-            //       .UseXminAsConcurrencyToken();
+            builder.Ignore<AbstractDbBase>();
 
             builder.Entity<User>()
                 .HasIndex(u => u.UserName)
                 .IsUnique();
+
+            builder.Entity<User>()
+                .UseXminAsConcurrencyToken();
         }
 
         public virtual DbSet<User> Users { get; set; }

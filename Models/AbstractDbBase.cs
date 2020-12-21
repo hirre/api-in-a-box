@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace ApiService.Models
 {
@@ -18,5 +17,6 @@ namespace ApiService.Models
         public DateTimeOffset UpdatedDate { get; set; }
 
         public uint xmin { get; set; }
+
     }
 }
