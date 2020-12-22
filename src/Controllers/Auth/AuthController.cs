@@ -2,6 +2,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ApiService.Contexts;
+using ApiService.Exceptions;
 using ApiService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,10 +31,10 @@ namespace ApiService.Controllers
             var loadedUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName);
 
             if (loadedUser == null)
-                throw new Exception("Access denied.");
+                throw new HttpException("Access denied.", 403);
 
             if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
-                throw new Exception("Access denied.");
+                throw new HttpException("Access denied.", 403);
                         
             var claims = new Claim[] 
             {

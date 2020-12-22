@@ -1,4 +1,5 @@
 ﻿using ApiService.Contexts;
+using ApiService.Exceptions;
 using ApiService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ namespace ApiService.Controllers
             var loadedUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName.Equals(user.UserName));
 
             if (loadedUser != null)
-                throw new Exception("User already exists.");
+                throw new HttpException("User already exists.", 409);
 
             var newUser = new User
             {

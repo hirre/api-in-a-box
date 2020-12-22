@@ -1,6 +1,9 @@
+using System;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 using ApiService.Contexts;
+using ApiService.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -72,6 +75,33 @@ namespace ApiService
 #elif RELEASE
             dbContext.Database.Migrate();
 #endif
+
+            app.Use(next => async context => 
+            {
+                try
+                {
+                    await next.Invoke(context);
+                }
+                catch (Exception ex)
+                {
+                    var statusCode = 500;
+
+                    if (ex is HttpException httpEx)
+                        statusCode = httpEx.HttpStatusCode;
+
+                    context.Response.StatusCode = statusCode;
+                    
+                    var exObj = new 
+                    { 
+                        Exception = ex.Message,   
+                        HttpStatusCode = statusCode
+                    };
+                    
+                    var data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(exObj));
+                    context.Response.ContentType = "application/json";
+                    await context.Response.Body.WriteAsync(data.AsMemory(0, data.Length));
+                }
+            });
 
             app.UseHttpsRedirection();
             app.UseRouting();
