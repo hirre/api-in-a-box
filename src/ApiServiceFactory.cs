@@ -1,5 +1,4 @@
-﻿using ApiService.Contexts;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System.IO;
@@ -23,9 +22,11 @@ namespace ApiService
                .ConfigureWebHostDefaults(webBuilder =>
                {
                    webBuilder.UseStartup<Startup>();
+
                    webBuilder.ConfigureKestrel(options =>
                    {
                        var httpsPort = int.Parse(configuration["https_port"]);
+
                        options.Listen(IPAddress.Any, httpsPort,
                                         listenOptions =>
                                         {
