@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ApiService.Models
+﻿namespace ApiService.Models
 {
     public class User : AbstractDbBase
     {
