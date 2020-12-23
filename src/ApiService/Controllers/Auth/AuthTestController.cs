@@ -22,5 +22,13 @@ namespace ApiService.Controllers.Auth
         {
             return true;
         }
+
+        [HttpGet]
+        [Authorize(Roles = "User")]
+        [Route("TestRole")]
+        public bool TestRole()
+        {
+            return true;
+        }
     }
 }
