@@ -2,6 +2,7 @@ using System;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ApiService.Contexts;
 using ApiService.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -60,8 +61,13 @@ namespace ApiService
                     ValidateAudience = false
                 };
             });
-                
-            services.AddControllers();
+
+            services.AddControllers()
+                    .AddJsonOptions(options => 
+                    {
+                        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                        options.JsonSerializerOptions.WriteIndented = true;
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,10 +93,19 @@ namespace ApiService
                         statusCode = httpEx.HttpStatusCode;
 
                     context.Response.StatusCode = statusCode;
+
+                    var exMsg = ex.Message;
+                    var ie = ex.InnerException;
+
+                    while (ie != null)
+                    {
+                        exMsg += " " + ie.Message;
+                        ie = ie.InnerException;
+                    }
                     
                     var exObj = new 
                     { 
-                        Exception = ex.Message,   
+                        Exception = exMsg,   
                         HttpStatusCode = statusCode
                     };
                     

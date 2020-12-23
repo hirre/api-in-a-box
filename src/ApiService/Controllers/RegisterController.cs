@@ -4,6 +4,7 @@ using ApiService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Models;
 using System;
 using System.Threading.Tasks;
 
@@ -35,6 +36,7 @@ namespace ApiService.Controllers
                 UserName = user.UserName,
             };
 
+            newUser.Roles.Add(new Role() { Name = "User" });
             newUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, BCrypt.Net.BCrypt.GenerateSalt());
 
             await _dbContext.Users.AddAsync(newUser);

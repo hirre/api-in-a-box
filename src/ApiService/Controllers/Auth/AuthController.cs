@@ -28,18 +28,27 @@ namespace ApiService.Controllers
         [HttpPost]
         public async Task<string> Auth([FromBody] User user)
         {
-            var loadedUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName);
+            var loadedUser = await _dbContext.Users
+                                .Include(x => x.Roles)
+                                .FirstOrDefaultAsync(x => x.UserName == user.UserName);
 
             if (loadedUser == null)
                 throw new HttpException("Access denied", 403);
 
             if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
                 throw new HttpException("Access denied", 403);
+
+            var roles = "";
+            foreach (var r in loadedUser.Roles)
+            {
+                roles += $"{r.Name},";
+            }
+            roles = roles.Substring(0, roles.Length - 1);
                         
             var claims = new Claim[] 
             {
                 new Claim("id", "" + loadedUser.Id),
-                new Claim(ClaimTypes.Name, loadedUser.UserName) 
+                new Claim(ClaimTypes.Role, roles) 
             };
 
             var token = TokenFactory.Generate(_secret.Token.Key, _secret.Token.Issuer, _secret.Token.Audience, 

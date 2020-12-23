@@ -1,5 +1,6 @@
 ﻿using ApiService.Models;
 using Microsoft.EntityFrameworkCore;
+using Models;
 
 namespace ApiService.Contexts
 {
@@ -17,6 +18,12 @@ namespace ApiService.Contexts
                 .IsUnique();
 
             builder.Entity<User>()
+                .UseXminAsConcurrencyToken();
+
+            builder.Entity<Role>()
+                .HasIndex(r => r.Name);
+
+            builder.Entity<Role>()
                 .UseXminAsConcurrencyToken();
         }
 
