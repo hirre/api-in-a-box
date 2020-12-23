@@ -31,10 +31,10 @@ namespace ApiService.Controllers
             var loadedUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName);
 
             if (loadedUser == null)
-                throw new HttpException("Access denied.", 403);
+                throw new HttpException("Access denied", 403);
 
             if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
-                throw new HttpException("Access denied.", 403);
+                throw new HttpException("Access denied", 403);
                         
             var claims = new Claim[] 
             {

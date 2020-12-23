@@ -28,7 +28,7 @@ namespace ApiService.Controllers
             var loadedUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName.Equals(user.UserName));
 
             if (loadedUser != null)
-                throw new HttpException("User already exists.", 409);
+                throw new HttpException("User already exists", 409);
 
             var newUser = new User
             {
@@ -41,7 +41,7 @@ namespace ApiService.Controllers
             var res = await _dbContext.SaveChangesAsync();
 
             if (res == 0)
-                throw new Exception("Failed saving user");
+                throw new HttpException("Failed saving user", 500);
 
             return newUser;
         }
