@@ -42,7 +42,7 @@ namespace ApiService.Controllers
                 new Claim(ClaimTypes.Name, loadedUser.UserName) 
             };
 
-            var token = TokenFactory.Generate(_secret.Token.Key, _secret.Token.Issuer, _secret.Token.Issuer, 
+            var token = TokenFactory.Generate(_secret.Token.Key, _secret.Token.Issuer, _secret.Token.Audience, 
                         DateTime.Now.AddHours(1), claims);
 
             return await Task.FromResult(token);

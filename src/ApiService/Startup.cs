@@ -54,8 +54,7 @@ namespace ApiService
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = Configuration["Token:Issuer"],
-                    ValidateIssuerSigningKey = false,
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(tokenKeyBytes),
                     ValidateIssuer = false,
                     ValidateAudience = false
@@ -104,8 +103,8 @@ namespace ApiService
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication(); // Must occur before authorization
             app.UseAuthorization();
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
@@ -122,6 +121,7 @@ namespace ApiService
         {
             public SecureString Key { get; set; }
             public string Issuer { get; set; }
+            public string Audience { get; set; }
         } 
     }
 }
