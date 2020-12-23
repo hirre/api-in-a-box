@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 
-namespace ApiService
+namespace ApiService.Logic
 {
     public static class TokenFactory
     {

@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using ApiService.Contexts;
 using ApiService.Exceptions;
+using ApiService.Logic;
+using ApiService.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -43,6 +45,8 @@ namespace ApiService
             secret.Token.Key = tokenSecKey;
 
             services.AddSingleton(x => secret);
+            services.AddSingleton<AuthLogic>();
+            services.AddSingleton<RegisterLogic>();
 
             services.AddAuthentication(x =>
             {
@@ -126,17 +130,5 @@ namespace ApiService
                 endpoints.MapControllers();
             });
         }
-    }
-
-    public class Secret
-    {
-        public TokenData Token { get; } = new TokenData();
-
-        public class TokenData
-        {
-            public SecureString Key { get; set; }
-            public string Issuer { get; set; }
-            public string Audience { get; set; }
-        } 
     }
 }

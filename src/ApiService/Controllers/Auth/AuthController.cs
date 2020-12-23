@@ -1,11 +1,8 @@
-using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using ApiService.Contexts;
-using ApiService.Exceptions;
+using ApiService.Logic;
 using ApiService.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ApiService.Controllers
@@ -17,44 +14,21 @@ namespace ApiService.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly DatabaseContext _dbContext;
         private readonly Secret _secret;
+        private readonly AuthLogic _authLogic;
 
-        public AuthController(Secret secret, ILogger<AuthController> logger, DatabaseContext dbContext)
+        public AuthController(DatabaseContext dbContext, Secret secret, AuthLogic authLogic, 
+            ILogger<AuthController> logger)
         {
             _secret = secret;
             _logger = logger;
             _dbContext = dbContext;
+            _authLogic = authLogic;
         }
 
         [HttpPost]
         public async Task<string> Auth([FromBody] User user)
         {
-            var loadedUser = await _dbContext.Users
-                                .Include(x => x.Roles)
-                                .FirstOrDefaultAsync(x => x.UserName == user.UserName);
-
-            if (loadedUser == null)
-                throw new HttpException("Access denied", 403);
-
-            if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
-                throw new HttpException("Access denied", 403);
-
-            var roles = "";
-            foreach (var r in loadedUser.Roles)
-            {
-                roles += $"{r.Name},";
-            }
-            roles = roles.Substring(0, roles.Length - 1);
-                        
-            var claims = new Claim[] 
-            {
-                new Claim("id", "" + loadedUser.Id),
-                new Claim(ClaimTypes.Role, roles) 
-            };
-
-            var token = TokenFactory.Generate(_secret.Token.Key, _secret.Token.Issuer, _secret.Token.Audience, 
-                        DateTime.Now.AddHours(1), claims);
-
-            return await Task.FromResult(token);
+            return await _authLogic.Auth(_dbContext, _secret, user);
         }
     }
 }
