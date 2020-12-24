@@ -4,4 +4,5 @@ The goal of this project is to have a "ready to go" API backend with all necessa
 - ORM EF Core + PostgreSql backend along with concurrency detection
 - User registration and login
 - HTTPS (TLS)
-- and many more features...
+- Logging (file and console) with Serilog
+- and more features...
