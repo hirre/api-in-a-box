@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using Serilog;
 
 namespace ApiService
 {
@@ -18,6 +19,10 @@ namespace ApiService
                         .Build();
 
             var host = Host.CreateDefaultBuilder(args)
+                .UseSerilog((context, configuration) =>
+                {
+                    configuration.ReadFrom.Configuration(context.Configuration);
+                })
                .UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
                .ConfigureWebHostDefaults(webBuilder =>
                {
@@ -35,6 +40,7 @@ namespace ApiService
                                         });
                    });
                })
+               
                .Build();
 
             return host;
