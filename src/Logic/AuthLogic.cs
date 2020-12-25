@@ -1,6 +1,7 @@
 ﻿using ApiService.Contexts;
 using ApiService.Exceptions;
 using ApiService.Models;
+using ApiService.Models.Auth;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;

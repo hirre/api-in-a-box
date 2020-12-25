@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using ApiService.Contexts;
 using ApiService.Exceptions;
 using ApiService.Logic;
-using ApiService.Models;
+using ApiService.Models.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

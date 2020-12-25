@@ -1,7 +1,7 @@
 ﻿
 using System.Security;
 
-namespace ApiService.Models
+namespace ApiService.Models.Auth
 {
     public class Secret
     {

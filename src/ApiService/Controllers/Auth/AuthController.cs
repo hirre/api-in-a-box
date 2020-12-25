@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using ApiService.Contexts;
 using ApiService.Logic;
 using ApiService.Models;
+using ApiService.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 

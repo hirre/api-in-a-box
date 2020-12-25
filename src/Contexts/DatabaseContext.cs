@@ -1,6 +1,6 @@
 ﻿using ApiService.Models;
+using ApiService.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using Models;
 using System;
 using System.Linq;
 using System.Threading;

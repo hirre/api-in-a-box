@@ -1,4 +1,4 @@
-﻿using Models;
+﻿using ApiService.Models.Auth;
 using System.Collections.Generic;
 
 namespace ApiService.Models

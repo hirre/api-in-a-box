@@ -1,8 +1,8 @@
 ﻿using ApiService.Contexts;
 using ApiService.Exceptions;
 using ApiService.Models;
+using ApiService.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using Models;
 using System.Threading.Tasks;
 
 namespace ApiService.Logic
