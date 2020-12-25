@@ -1,6 +1,7 @@
 ﻿using ApiService.Models;
 using ApiService.Models.Auth;
 using Microsoft.EntityFrameworkCore;
+using Models.Auth;
 using System;
 using System.Linq;
 using System.Threading;
@@ -70,8 +71,20 @@ namespace ApiService.Contexts
 
             builder.Entity<Role>()
                 .UseXminAsConcurrencyToken();
+
+            builder.Entity<ApiKey>()
+                .HasIndex(r => r.Name)
+                .IsUnique();
+
+            builder.Entity<ApiKey>()
+                .HasIndex(r => r.Key)
+                .IsUnique();
+
+            builder.Entity<ApiKey>()
+                .UseXminAsConcurrencyToken();
         }
 
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<ApiKey> ApiKeys { get; set; }
     }
 }

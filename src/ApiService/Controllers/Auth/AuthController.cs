@@ -5,6 +5,7 @@ using ApiService.Models;
 using ApiService.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Models.Auth;
 
 namespace ApiService.Controllers
 {
@@ -27,9 +28,17 @@ namespace ApiService.Controllers
         }
 
         [HttpPost]
-        public async Task<string> Auth([FromBody] User user)
+        [Route("AuthUser")]
+        public async Task<string> AuthUser([FromBody] User user)
         {
-            return await _authLogic.Auth(_dbContext, _secret, user);
+            return await _authLogic.AuthUser(_dbContext, _secret, user);
+        }
+
+        [HttpPost]
+        [Route("AuthApi")]
+        public async Task<string> AuthApi([FromBody] ApiKey apiKey)
+        {
+            return await _authLogic.AuthApi(_dbContext, _secret, apiKey);
         }
     }
 }

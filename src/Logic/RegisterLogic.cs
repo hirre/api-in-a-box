@@ -3,6 +3,8 @@ using ApiService.Exceptions;
 using ApiService.Models;
 using ApiService.Models.Auth;
 using Microsoft.EntityFrameworkCore;
+using Models.Auth;
+using System;
 using System.Threading.Tasks;
 
 namespace ApiService.Logic
@@ -11,7 +13,8 @@ namespace ApiService.Logic
     {
         public async Task<User> CreateUser(DatabaseContext dbContext, User user)
         {
-            var loadedUser = await dbContext.Users.FirstOrDefaultAsync(x => x.UserName.Equals(user.UserName));
+            var loadedUser = await dbContext.Users
+                .FirstOrDefaultAsync(x => x.UserName == user.UserName);
 
             if (loadedUser != null)
                 throw new HttpException("User already exists", 409);
@@ -21,7 +24,7 @@ namespace ApiService.Logic
                 UserName = user.UserName,
             };
 
-            newUser.Roles.Add(new Role() { Name = "User" });
+            newUser.Roles.Add(new Role() { Name = "user" });
             newUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, BCrypt.Net.BCrypt.GenerateSalt());
 
             await dbContext.Users.AddAsync(newUser);
@@ -31,6 +34,36 @@ namespace ApiService.Logic
                 throw new HttpException("Failed saving user", 500);
 
             return newUser;
+        }
+
+        public async Task<ApiKey> CreateApiKey(DatabaseContext dbContext, ApiKey apiKey)
+        {
+            var loadedApiKey = await dbContext.ApiKeys
+                .FirstOrDefaultAsync(x => x.Name == apiKey.Name);
+
+            if (loadedApiKey != null)
+                throw new HttpException("API key name already exists", 409);
+
+            var apiKeyStr = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
+
+            var newApiKey = new ApiKey
+            {
+                Name = apiKey.Name,
+                Key = BCrypt.Net.BCrypt.HashPassword(apiKeyStr, BCrypt.Net.BCrypt.GenerateSalt()),
+                ExpirationDate = DateTimeOffset.UtcNow.AddYears(1)
+            };
+
+            await dbContext.ApiKeys.AddAsync(newApiKey);
+            var res = await dbContext.SaveChangesAsync();
+
+            if (res == 0)
+                throw new HttpException("Failed saving API key", 500);
+
+            // Rewrite original un-hashed API key to return value so that the user can save it
+            newApiKey.Key = apiKeyStr;
+
+            return newApiKey;
+
         }
     }
 }

@@ -3,6 +3,7 @@ using ApiService.Logic;
 using ApiService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Models.Auth;
 using System.Threading.Tasks;
 
 namespace ApiService.Controllers
@@ -24,9 +25,17 @@ namespace ApiService.Controllers
         }
 
         [HttpPost]
-        public async Task<User> Post([FromBody] User user)
+        [Route("CreateUser")]
+        public async Task<User> CreateUser([FromBody] User user)
         {
             return await _registerLogic.CreateUser(_dbContext, user);
+        }
+
+        [HttpPost]
+        [Route("CreateApiKey")]
+        public async Task<ApiKey> CreateApiKey([FromBody] ApiKey apiKey)
+        {
+            return await _registerLogic.CreateApiKey(_dbContext, apiKey);
         }
     }
 }
