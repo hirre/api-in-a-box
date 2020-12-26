@@ -1,7 +1,7 @@
 ﻿using ApiService.Contexts;
-using ApiService.Exceptions;
 using ApiService.Models;
 using ApiService.Models.Auth;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Models.Auth;
 using System;
@@ -19,10 +19,10 @@ namespace ApiService.Logic
                                 .FirstOrDefaultAsync(x => x.UserName == user.UserName);
 
             if (loadedUser == null)
-                throw new HttpException("Access denied", 403);
+                throw new AccessDeniedException();
 
             if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
-                throw new HttpException("Access denied", 403);
+                throw new AccessDeniedException();
 
             var roles = "";
             foreach (var r in loadedUser.Roles)
@@ -49,10 +49,10 @@ namespace ApiService.Logic
                             .FirstOrDefaultAsync<ApiKey>(x => x.Name == apiKey.Name);
 
             if (loadedApiKey == null)
-                throw new HttpException("Access denied", 403);
+                throw new AccessDeniedException();
 
             if (!BCrypt.Net.BCrypt.Verify(apiKey.Key, loadedApiKey.Key))
-                throw new HttpException("Access denied", 403);
+                throw new AccessDeniedException();
 
             var claims = new Claim[]
             {

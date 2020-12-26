@@ -1,7 +1,7 @@
 ﻿using ApiService.Contexts;
-using ApiService.Exceptions;
 using ApiService.Models;
 using ApiService.Models.Auth;
+using Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Models.Auth;
 using System;
@@ -17,7 +17,7 @@ namespace ApiService.Logic
                 .FirstOrDefaultAsync(x => x.UserName == user.UserName);
 
             if (loadedUser != null)
-                throw new HttpException("User already exists", 409);
+                throw new ObjectExistsException("User already exists");
 
             var newUser = new User
             {
@@ -31,7 +31,7 @@ namespace ApiService.Logic
             var res = await dbContext.SaveChangesAsync();
 
             if (res == 0)
-                throw new HttpException("Failed saving user", 500);
+                throw new FailedSaveException("Failed saving user");
 
             return newUser;
         }
@@ -42,7 +42,7 @@ namespace ApiService.Logic
                 .FirstOrDefaultAsync(x => x.Name == apiKey.Name);
 
             if (loadedApiKey != null)
-                throw new HttpException("API key name already exists", 409);
+                throw new ObjectExistsException("API key name already exists");
 
             var apiKeyStr = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
 
@@ -57,7 +57,7 @@ namespace ApiService.Logic
             var res = await dbContext.SaveChangesAsync();
 
             if (res == 0)
-                throw new HttpException("Failed saving API key", 500);
+                throw new FailedSaveException("Failed saving API key");
 
             // Rewrite original un-hashed API key to return value so that the user can save it
             newApiKey.Key = apiKeyStr;

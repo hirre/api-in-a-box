@@ -3,7 +3,7 @@
 namespace ApiService.Exceptions
 {
     [Serializable]
-    public class HttpException : Exception
+    public abstract class HttpException : Exception
     {
         public int HttpStatusCode { get; }
 
