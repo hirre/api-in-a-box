@@ -59,7 +59,6 @@ namespace ApiService.Logic
                 new Claim(ClaimTypes.Authentication, loadedApiKey.Name),
                 new Claim(ClaimTypes.Expiration, loadedApiKey.ExpirationDate.ToString()),
                 new Claim(ClaimTypes.Role, "api")
-
             };
 
             var token = TokenFactory.Generate(secret.Token.Key, secret.Token.Issuer, secret.Token.Audience,

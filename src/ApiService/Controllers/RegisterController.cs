@@ -25,14 +25,14 @@ namespace ApiService.Controllers
         }
 
         [HttpPost]
-        [Route("CreateUser")]
+        [Route("User")]
         public async Task<User> CreateUser([FromBody] User user)
         {
             return await _registerLogic.CreateUser(_dbContext, user);
         }
 
         [HttpPost]
-        [Route("CreateApiKey")]
+        [Route("ApiKey")]
         public async Task<ApiKey> CreateApiKey([FromBody] ApiKey apiKey)
         {
             return await _registerLogic.CreateApiKey(_dbContext, apiKey);

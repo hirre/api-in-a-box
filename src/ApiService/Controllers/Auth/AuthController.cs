@@ -28,14 +28,14 @@ namespace ApiService.Controllers
         }
 
         [HttpPost]
-        [Route("AuthUser")]
+        [Route("User")]
         public async Task<string> AuthUser([FromBody] User user)
         {
             return await _authLogic.AuthUser(_dbContext, _secret, user);
         }
 
         [HttpPost]
-        [Route("AuthApi")]
+        [Route("ApiKey")]
         public async Task<string> AuthApi([FromBody] ApiKey apiKey)
         {
             return await _authLogic.AuthApi(_dbContext, _secret, apiKey);
