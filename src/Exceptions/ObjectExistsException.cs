@@ -1,7 +1,4 @@
-using System;
-using ApiService.Exceptions;
-
-namespace Exceptions
+namespace ApiInABox.Exceptions
 {
     public class ObjectExistsException : HttpException
     {

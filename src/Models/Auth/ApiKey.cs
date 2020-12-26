@@ -1,7 +1,6 @@
 using System;
-using ApiService.Models;
 
-namespace Models.Auth
+namespace ApiInABox.Models.Auth
 {
     public class ApiKey : AbstractDbBase
     {

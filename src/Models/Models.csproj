@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <RootNamespace>ApiService.Models</RootNamespace>
+    <RootNamespace>ApiInABox.Models</RootNamespace>
   </PropertyGroup>
 
 </Project>

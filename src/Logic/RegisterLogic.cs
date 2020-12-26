@@ -1,13 +1,12 @@
-﻿using ApiService.Contexts;
-using ApiService.Models;
-using ApiService.Models.Auth;
-using Exceptions;
+﻿using ApiInABox.Contexts;
+using ApiInABox.Exceptions;
+using ApiInABox.Models;
+using ApiInABox.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using Models.Auth;
 using System;
 using System.Threading.Tasks;
 
-namespace ApiService.Logic
+namespace ApiInABox.Logic
 {
     public class RegisterLogic
     {

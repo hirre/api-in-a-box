@@ -1,6 +1,6 @@
 using System;
 
-namespace ApiService.Models
+namespace ApiInABox.Models
 {
     public class AbstractDbBase
     {

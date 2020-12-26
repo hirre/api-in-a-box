@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
-using ApiService.Contexts;
-using ApiService.Logic;
-using ApiService.Models;
-using ApiService.Models.Auth;
+using ApiInABox.Contexts;
+using ApiInABox.Logic;
+using ApiInABox.Models;
+using ApiInABox.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Models.Auth;
 
-namespace ApiService.Controllers
+namespace ApiInABox.Controllers.Auth
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -18,7 +17,7 @@ namespace ApiService.Controllers
         private readonly Secret _secret;
         private readonly AuthLogic _authLogic;
 
-        public AuthController(DatabaseContext dbContext, Secret secret, AuthLogic authLogic, 
+        public AuthController(DatabaseContext dbContext, Secret secret, AuthLogic authLogic,
             ILogger<AuthController> logger)
         {
             _secret = secret;

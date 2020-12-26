@@ -1,12 +1,12 @@
-﻿using ApiService.Contexts;
-using ApiService.Logic;
-using ApiService.Models;
+﻿using ApiInABox.Contexts;
+using ApiInABox.Logic;
+using ApiInABox.Models;
+using ApiInABox.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Models.Auth;
 using System.Threading.Tasks;
 
-namespace ApiService.Controllers
+namespace ApiInABox.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

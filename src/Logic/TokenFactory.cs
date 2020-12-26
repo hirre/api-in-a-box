@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 
-namespace ApiService.Logic
+namespace ApiInABox.Logic
 {
     public static class TokenFactory
     {
@@ -65,7 +65,7 @@ namespace ApiService.Logic
                     .Claims.First(claim => claim.Type == claimType).Value;
         }
 
-        private static String SecureStringToString(SecureString value) 
+        private static string SecureStringToString(SecureString value) 
         {
             IntPtr valuePtr = IntPtr.Zero;
             try 

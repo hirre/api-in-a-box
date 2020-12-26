@@ -1,6 +1,4 @@
-﻿using ApiService.Models;
-
-namespace ApiService.Models.Auth
+﻿namespace ApiInABox.Models.Auth
 {
     public class Role : AbstractDbBase
     {

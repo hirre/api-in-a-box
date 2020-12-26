@@ -1,13 +1,12 @@
-﻿using ApiService.Models;
-using ApiService.Models.Auth;
+﻿using ApiInABox.Models;
+using ApiInABox.Models.Auth;
 using Microsoft.EntityFrameworkCore;
-using Models.Auth;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ApiService.Contexts
+namespace ApiInABox.Contexts
 {
     public class DatabaseContext : DbContext
     {

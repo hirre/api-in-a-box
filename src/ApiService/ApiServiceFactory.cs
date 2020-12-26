@@ -6,7 +6,7 @@ using System.Net;
 using System.Reflection;
 using Serilog;
 
-namespace ApiService
+namespace ApiInABox
 {
     public static class ApiServiceFactory
     {
@@ -40,7 +40,7 @@ namespace ApiService
                                         });
                    });
                })
-               
+
                .Build();
 
             return host;

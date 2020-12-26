@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ApiService.Controllers.Auth
+namespace ApiInABox.Controllers.Auth
 {
     [ApiController]
     [Route("api/[controller]")]

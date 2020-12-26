@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ApiService.Exceptions
+namespace ApiInABox.Exceptions
 {
     [Serializable]
     public abstract class HttpException : Exception

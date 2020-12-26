@@ -1,7 +1,7 @@
-﻿using ApiService.Models.Auth;
+﻿using ApiInABox.Models.Auth;
 using System.Collections.Generic;
 
-namespace ApiService.Models
+namespace ApiInABox.Models
 {
     public class User : AbstractDbBase
     {

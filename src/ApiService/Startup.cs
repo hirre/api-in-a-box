@@ -3,10 +3,10 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ApiService.Contexts;
-using ApiService.Exceptions;
-using ApiService.Logic;
-using ApiService.Models.Auth;
+using ApiInABox.Contexts;
+using ApiInABox.Exceptions;
+using ApiInABox.Logic;
+using ApiInABox.Models.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ApiService
+namespace ApiInABox
 {
     public class Startup
     {
