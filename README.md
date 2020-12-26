@@ -8,7 +8,7 @@ Features include:
 - Authentication and authorization
 - API key generation
 - ORM EF Core + PostgreSql backend along with concurrency handling
-- User registration and login
+- User registration
 - HTTPS (TLS)
 - Logging (file and console) with Serilog
 - and more features...
