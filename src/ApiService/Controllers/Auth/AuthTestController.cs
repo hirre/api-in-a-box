@@ -23,9 +23,17 @@ namespace ApiService.Controllers.Auth
         }
 
         [HttpGet]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "user")]
         [Route("TestRole")]
         public bool TestRole()
+        {
+            return true;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "api")]
+        [Route("TestApi")]
+        public bool TestApi()
         {
             return true;
         }
