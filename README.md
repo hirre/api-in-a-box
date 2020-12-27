@@ -1,7 +1,7 @@
 <img src="./images/logo.png" width="200">
 
 # API in a Box
-The goal of this project is to have a "ready to go" API backend with all necessary features in order to scale web development. 
+The goal of this project is to have a "ready to go" API back-end service with all necessary features in order to scale web development. 
 
 Features include:
 - Token generation and validation 
