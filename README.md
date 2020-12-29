@@ -12,3 +12,8 @@ Features include:
 - HTTPS (TLS)
 - Logging (file and console) with Serilog
 - and more...
+
+## Create a self signed certificate
+Guide: https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide
+
+Export the certificate to a file called "ServerCertificate.pfx" and put it in the "src/ApiService/" folder (it will automatically be copied to the binary output folder).
