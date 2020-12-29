@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using NodaTime;
+using NodaTime.Serialization.SystemTextJson;
 
 namespace ApiInABox
 {
@@ -30,7 +32,10 @@ namespace ApiInABox
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>(options =>
-                    options.UseNpgsql(Configuration["ConnectionString"]));
+                    options.UseNpgsql(Configuration["ConnectionString"], op => 
+                    { 
+                        op.UseNodaTime();
+                    }));
 
             var secret = new Secret();
             var tokenSecKey = new SecureString();
@@ -71,6 +76,7 @@ namespace ApiInABox
                     {
                         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                         options.JsonSerializerOptions.WriteIndented = true;
+                        options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
                     });
         }
 

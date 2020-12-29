@@ -6,4 +6,8 @@
     <RootNamespace>ApiInABox.Models</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="5.0.1" />
+  </ItemGroup>
+
 </Project>

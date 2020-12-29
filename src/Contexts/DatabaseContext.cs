@@ -1,6 +1,7 @@
 ﻿using ApiInABox.Models;
 using ApiInABox.Models.Auth;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using System;
 using System.Linq;
 using System.Threading;
@@ -50,7 +51,7 @@ namespace ApiInABox.Contexts
                 if (entry.Entity is not AbstractDbBase ae)
                     continue;
 
-                ae.UpdatedDate = DateTimeOffset.UtcNow;
+                ae.UpdatedDate = Instant.FromDateTimeUtc(DateTime.UtcNow);
             }
         }
 
