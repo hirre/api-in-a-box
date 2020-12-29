@@ -28,3 +28,6 @@ It is recommended to have Kestrel running behind a reverse proxy, e.g. Nginx.
 
 Guide: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-5.0#when-to-use-kestrel-with-a-reverse-proxy
 
+## More info
+https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-5.0
+
