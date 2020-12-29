@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ApiService.sln",
+                "${workspaceFolder}/ApiInABox.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -24,7 +24,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/api-service.sln",
+                "${workspaceFolder}/ApiInABox.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -37,7 +37,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/api-service.sln",
+                "${workspaceFolder}/ApiInABox.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
