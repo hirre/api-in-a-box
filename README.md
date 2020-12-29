@@ -17,3 +17,10 @@ Features include:
 Guide: https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide
 
 Export the certificate to a file called "ServerCertificate.pfx" and put it in the "src/ApiService/" folder (it will automatically be copied to the binary output folder).
+
+## PostgreSql
+Download: https://www.postgresql.org/download/
+
+Download and install PostgreSql
+
+Change the connection string at the bottom of the file in "src/ApiService/appsettings.json" to your setup.
