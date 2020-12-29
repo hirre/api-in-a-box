@@ -2,6 +2,7 @@
 using ApiInABox.Logic;
 using ApiInABox.Models;
 using ApiInABox.Models.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace ApiInABox.Controllers
 
         [HttpPost]
         [Route("ApiKey")]
+        [Authorize]
         public async Task<ApiKey> CreateApiKey([FromBody] ApiKey apiKey)
         {
             return await _registerLogic.CreateApiKey(_dbContext, apiKey);

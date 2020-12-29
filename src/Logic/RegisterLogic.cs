@@ -21,6 +21,8 @@ namespace ApiInABox.Logic
             var newUser = new User
             {
                 UserName = user.UserName,
+                ActivationEmail = user.ActivationEmail,
+                TemporarySecret = ("" + Guid.NewGuid() + Guid.NewGuid()).Replace("-", "")
             };
 
             newUser.Roles.Add(new Role() { Name = "user" });

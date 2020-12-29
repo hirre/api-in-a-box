@@ -15,7 +15,7 @@ namespace ApiInABox.Logic
         {
             var loadedUser = await dbContext.Users
                                 .Include(x => x.Roles)
-                                .FirstOrDefaultAsync(x => x.UserName == user.UserName);
+                                .FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Activated);
 
             if (loadedUser == null)
                 throw new AccessDeniedException();
