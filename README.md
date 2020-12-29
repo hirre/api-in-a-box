@@ -16,7 +16,7 @@ Features include:
 ## Create a self signed certificate
 Guide: https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide
 
-Export the certificate to a file called "ServerCertificate.pfx" ("https_certificate" in "src/ApiService/appsettings.json") and put it in the "src/ApiService/" folder (it will automatically be copied to the binary output folder). Set the "https_certificate_password" to your password and change the token key to something unique and hard to guess.
+Export the certificate to a file called "ServerCertificate.pfx" ("https_certificate" field in "src/ApiService/appsettings.json") and put it in the "src/ApiService/" folder (it will automatically be copied to the binary output folder). Set the "https_certificate_password" field to your password and change the token key to something unique and hard to guess.
 
 ## PostgreSql
 Download: https://www.postgresql.org/download/
@@ -24,3 +24,9 @@ Download: https://www.postgresql.org/download/
 Download and install PostgreSql.
 
 Change the connection string in "src/ApiService/appsettings.json" to your setup.
+
+## Reverse proxy
+It is recommended to have Kestrel running behind a reverse proxy, e.g. Nginx.
+
+Guide: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-5.0#when-to-use-kestrel-with-a-reverse-proxy
+
