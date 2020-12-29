@@ -2,6 +2,7 @@
 using ApiInABox.Exceptions;
 using ApiInABox.Models;
 using ApiInABox.Models.Auth;
+using ApiInABox.Models.RequestObjects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
@@ -10,23 +11,23 @@ namespace ApiInABox.Logic
 {
     public class RegisterLogic
     {
-        public async Task<User> CreateUser(DatabaseContext dbContext, User user)
+        public async Task<User> CreateUser(DatabaseContext dbContext, RegisterUserRequest regUserObj)
         {
             var loadedUser = await dbContext.Users
-                .FirstOrDefaultAsync(x => x.UserName == user.UserName);
+                .FirstOrDefaultAsync(x => x.UserName == regUserObj.UserName);
 
             if (loadedUser != null)
                 throw new ObjectExistsException("User already exists");
 
             var newUser = new User
             {
-                UserName = user.UserName,
-                ActivationEmail = user.ActivationEmail,
-                TemporarySecret = ("" + Guid.NewGuid() + Guid.NewGuid()).Replace("-", "")
+                UserName = regUserObj.UserName,
+                ActivationEmail = regUserObj.ActivationEmail,
+                TemporarySecret = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "")
             };
 
             newUser.Roles.Add(new Role() { Name = "user" });
-            newUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, BCrypt.Net.BCrypt.GenerateSalt());
+            newUser.Password = BCrypt.Net.BCrypt.HashPassword(regUserObj.Password, BCrypt.Net.BCrypt.GenerateSalt());
 
             await dbContext.Users.AddAsync(newUser);
             var res = await dbContext.SaveChangesAsync();
@@ -37,10 +38,29 @@ namespace ApiInABox.Logic
             return newUser;
         }
 
-        public async Task<ApiKey> CreateApiKey(DatabaseContext dbContext, ApiKey apiKey)
+        public async Task<User> ActivateUser(DatabaseContext dbContext, ActivateUserRequest activateUserObj)
+        {
+            var loadedUser = await dbContext.Users
+                .FirstOrDefaultAsync(x => x.TemporarySecret.Equals(activateUserObj.U));
+
+            if (loadedUser == null)
+                throw new ObjectNotExistsException("Activation code doesn't exist");
+
+            loadedUser.Activated = true;
+            loadedUser.TemporarySecret = null;            
+
+            var res = await dbContext.SaveChangesAsync();
+
+            if (res == 0)
+                throw new FailedSaveException("Failed saving user");
+
+            return loadedUser;
+        }
+
+        public async Task<ApiKey> CreateApiKey(DatabaseContext dbContext, RegisterApiKeyRequest regApiKeyObj)
         {
             var loadedApiKey = await dbContext.ApiKeys
-                .FirstOrDefaultAsync(x => x.Name == apiKey.Name);
+                .FirstOrDefaultAsync(x => x.Name == regApiKeyObj.Name);
 
             if (loadedApiKey != null)
                 throw new ObjectExistsException("API key name already exists");
@@ -49,7 +69,7 @@ namespace ApiInABox.Logic
 
             var newApiKey = new ApiKey
             {
-                Name = apiKey.Name,
+                Name = regApiKeyObj.Name,
                 Key = BCrypt.Net.BCrypt.HashPassword(apiKeyStr, BCrypt.Net.BCrypt.GenerateSalt()),
                 ExpirationDate = DateTimeOffset.UtcNow.AddYears(1)
             };

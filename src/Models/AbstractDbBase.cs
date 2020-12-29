@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiInABox.Models
 {
@@ -10,6 +11,7 @@ namespace ApiInABox.Models
             UpdatedDate = CreatedDate;
         }
 
+        [Key]        
         public int Id { get; set; }
 
         public DateTimeOffset CreatedDate { get; set; }

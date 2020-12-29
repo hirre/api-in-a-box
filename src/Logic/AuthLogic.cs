@@ -1,7 +1,7 @@
 ﻿using ApiInABox.Contexts;
 using ApiInABox.Exceptions;
-using ApiInABox.Models;
 using ApiInABox.Models.Auth;
+using ApiInABox.Models.RequestObjects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
@@ -11,16 +11,16 @@ namespace ApiInABox.Logic
 {
     public class AuthLogic
     {
-        public async Task<string> AuthUser(DatabaseContext dbContext, Secret secret, User user)
+        public async Task<string> AuthUser(DatabaseContext dbContext, Secret secret, AuthUserRequest authUserRequestObj)
         {
             var loadedUser = await dbContext.Users
                                 .Include(x => x.Roles)
-                                .FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Activated);
+                                .FirstOrDefaultAsync(x => x.UserName == authUserRequestObj.UserName && x.Activated);
 
             if (loadedUser == null)
                 throw new AccessDeniedException();
 
-            if (!BCrypt.Net.BCrypt.Verify(user.Password, loadedUser.Password))
+            if (!BCrypt.Net.BCrypt.Verify(authUserRequestObj.Password, loadedUser.Password))
                 throw new AccessDeniedException();
 
             var roles = "";
@@ -42,15 +42,15 @@ namespace ApiInABox.Logic
             return token;
         }
 
-        public async Task<string> AuthApi(DatabaseContext dbContext, Secret secret, ApiKey apiKey)
+        public async Task<string> AuthApi(DatabaseContext dbContext, Secret secret, AuthApiRequest authApiKeyRequestObj)
         {
             var loadedApiKey = await dbContext.ApiKeys
-                            .FirstOrDefaultAsync<ApiKey>(x => x.Name == apiKey.Name);
+                            .FirstOrDefaultAsync<ApiKey>(x => x.Name == authApiKeyRequestObj.Name);
 
             if (loadedApiKey == null)
                 throw new AccessDeniedException();
 
-            if (!BCrypt.Net.BCrypt.Verify(apiKey.Key, loadedApiKey.Key))
+            if (!BCrypt.Net.BCrypt.Verify(authApiKeyRequestObj.Key, loadedApiKey.Key))
                 throw new AccessDeniedException();
 
             var claims = new Claim[]

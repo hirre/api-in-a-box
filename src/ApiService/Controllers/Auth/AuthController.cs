@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using ApiInABox.Contexts;
 using ApiInABox.Logic;
-using ApiInABox.Models;
 using ApiInABox.Models.Auth;
+using ApiInABox.Models.RequestObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -28,16 +28,16 @@ namespace ApiInABox.Controllers.Auth
 
         [HttpPost]
         [Route("User")]
-        public async Task<string> AuthUser([FromBody] User user)
+        public async Task<string> AuthUser([FromBody] AuthUserRequest authUserRequestObj)
         {
-            return await _authLogic.AuthUser(_dbContext, _secret, user);
+            return await _authLogic.AuthUser(_dbContext, _secret, authUserRequestObj);
         }
 
         [HttpPost]
         [Route("ApiKey")]
-        public async Task<string> AuthApi([FromBody] ApiKey apiKey)
+        public async Task<string> AuthApi([FromBody] AuthApiRequest authApiKeyRequestObj)
         {
-            return await _authLogic.AuthApi(_dbContext, _secret, apiKey);
+            return await _authLogic.AuthApi(_dbContext, _secret, authApiKeyRequestObj);
         }
     }
 }
