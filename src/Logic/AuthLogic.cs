@@ -45,7 +45,7 @@ namespace ApiInABox.Logic
         public async Task<string> AuthApi(DatabaseContext dbContext, Secret secret, AuthApiRequest authApiKeyRequestObj)
         {
             var loadedApiKey = await dbContext.ApiKeys
-                            .FirstOrDefaultAsync<ApiKey>(x => x.Name == authApiKeyRequestObj.Name);
+                            .FirstOrDefaultAsync(x => x.Name == authApiKeyRequestObj.Name);
 
             if (loadedApiKey == null)
                 throw new AccessDeniedException();

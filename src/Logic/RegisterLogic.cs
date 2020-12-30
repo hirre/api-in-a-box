@@ -6,6 +6,7 @@ using ApiInABox.Models.RequestObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NETCore.MailKit.Core;
+using NodaTime;
 using System;
 using System.Threading.Tasks;
 
@@ -25,10 +26,10 @@ namespace ApiInABox.Logic
         public async Task<User> CreateUser(DatabaseContext dbContext, RegisterUserRequest regUserObj)
         {
             var loadedUser = await dbContext.Users
-                .FirstOrDefaultAsync(x => x.UserName == regUserObj.UserName);
+                .FirstOrDefaultAsync(x => x.UserName == regUserObj.UserName || x.ActivationEmail == regUserObj.ActivationEmail);
 
             if (loadedUser != null)
-                throw new ObjectExistsException("User already exists");
+                throw new ObjectExistsException("Username/e-mail already exists");
 
             var newUser = new User
             {
@@ -47,21 +48,50 @@ namespace ApiInABox.Logic
                 throw new FailedSaveException("Failed saving user");
 
             var msg = $"<h2 style=\"font-family:verdana;\">Registration confirmation</h2>" +
-                $"<p style=\"font-family:verdana;\">Please click on <a href=\"{_configuration["DomainNameURL"]}/api/Register/ActivateUser?u={newUser.TemporarySecret}\">activate</a> " +
-                $"to complete your registration.</p>";
+                $"<p style=\"font-family:verdana;\">" + $"Username: {newUser.UserName}<br><br>" +
+                $"Please click on <a href=\"{_configuration["DomainNameURL"]}/api/Register/ActivateUser/{newUser.TemporarySecret}\">activate</a> " +
+                $"to complete your registration.<br><br>Thank you!</p>";
 
             await _emailService.SendAsync(newUser.ActivationEmail, "Activate account", msg, true);
 
             return newUser;
         }
 
-        public async Task<User> ActivateUser(DatabaseContext dbContext, ActivateUserRequest activateUserObj)
+        public async Task<User> ResendActivationEmail(DatabaseContext dbContext, string activationEmail)
         {
             var loadedUser = await dbContext.Users
-                .FirstOrDefaultAsync(x => x.TemporarySecret.Equals(activateUserObj.U));
+                .FirstOrDefaultAsync(x => x.ActivationEmail == activationEmail && !x.Activated);
+
+            if (loadedUser == null)
+                throw new ObjectNotExistsException("E-mail doesn't exist");
+
+            loadedUser.TemporarySecret = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
+
+            var res = await dbContext.SaveChangesAsync();
+
+            if (res == 0)
+                throw new FailedSaveException("Failed saving user");
+
+            var msg = $"<h2 style=\"font-family:verdana;\">Registration confirmation</h2>" +
+                $"<p style=\"font-family:verdana;\">" + $"Username: {loadedUser.UserName}<br><br>" +
+                $"Please click on <a href=\"{_configuration["DomainNameURL"]}/api/Register/ActivateUser/{loadedUser.TemporarySecret}\">activate</a> " +
+                $"to complete your registration.<br><br>Thank you!</p>";
+
+            await _emailService.SendAsync(loadedUser.ActivationEmail, "Activate account", msg, true);
+
+            return loadedUser;
+        }
+
+        public async Task<User> ActivateUser(DatabaseContext dbContext, string temporarySecret)
+        {
+            var loadedUser = await dbContext.Users
+                .FirstOrDefaultAsync(x => x.TemporarySecret.Equals(temporarySecret));
 
             if (loadedUser == null)
                 throw new ObjectNotExistsException("Activation code doesn't exist");
+
+            if ((Instant.FromDateTimeUtc(DateTime.UtcNow) - loadedUser.UpdatedDate).Hours >= 24)
+                throw new BadRequestException("Activation period (24 hours) has passed, request a new activation");
 
             loadedUser.Activated = true;
             loadedUser.TemporarySecret = null;            

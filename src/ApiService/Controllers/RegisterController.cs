@@ -34,15 +34,22 @@ namespace ApiInABox.Controllers
         }
 
         [HttpGet]
-        [Route("ActivateUser")]
-        public async Task<User> CreateUser([FromQuery] ActivateUserRequest activateUserObj)
+        [Route("ActivateUser/{temporarySecret}")]
+        public async Task<User> CreateUser(string temporarySecret)
         {
-            return await _registerLogic.ActivateUser(_dbContext, activateUserObj);
+            return await _registerLogic.ActivateUser(_dbContext, temporarySecret);
+        }
+
+        [HttpGet]
+        [Route("ResendActivationEmail/{activationEmail}")]
+        public async Task<User> ResendActivationEmail(string activationEmail)
+        {
+            return await _registerLogic.ResendActivationEmail(_dbContext, activationEmail);
         }
 
         [HttpPost]
         [Route("ApiKey")]
-        [Authorize]
+        [Authorize(Roles = "user")]
         public async Task<ApiKey> CreateApiKey([FromBody] RegisterApiKeyRequest apiKey)
         {
             return await _registerLogic.CreateApiKey(_dbContext, apiKey);

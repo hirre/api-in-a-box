@@ -64,6 +64,10 @@ namespace ApiInABox.Contexts
                 .IsUnique();
 
             builder.Entity<User>()
+                .HasIndex(u => u.ActivationEmail)
+                .IsUnique();
+
+            builder.Entity<User>()
                 .HasMany(u => u.Roles)
                 .WithOne(r => r.User)
                 .OnDelete(DeleteBehavior.Cascade);
