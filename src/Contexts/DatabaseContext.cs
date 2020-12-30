@@ -18,14 +18,14 @@ namespace ApiInABox.Contexts
 
         public override int SaveChanges()
         {
-            SetUpdatedDateTime();
+            SetTrackingData();
 
             return base.SaveChanges();
         }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            SetUpdatedDateTime();
+            SetTrackingData();
 
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
@@ -33,19 +33,19 @@ namespace ApiInABox.Contexts
         public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, 
             CancellationToken cancellationToken = default)
         {
-            SetUpdatedDateTime();
+            SetTrackingData();
 
             return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            SetUpdatedDateTime();
+            SetTrackingData();
 
             return await base.SaveChangesAsync(cancellationToken);
         }
 
-        private void SetUpdatedDateTime()
+        private void SetTrackingData()
         {
             foreach (var entry in ChangeTracker.Entries().Where(e => e.State == EntityState.Modified &&
                      e.Entity is AbstractDbBase))
@@ -54,6 +54,16 @@ namespace ApiInABox.Contexts
                     continue;
 
                 ae.UpdatedDate = Instant.FromDateTimeUtc(DateTime.UtcNow);
+                ae.UpdatedBy = TokenNameId;
+            }
+
+            foreach (var entry in ChangeTracker.Entries().Where(e => e.State == EntityState.Added &&
+                     e.Entity is AbstractDbBase))
+            {
+                if (entry.Entity is not AbstractDbBase ae)
+                    continue;
+
+                ae.CreatedBy = TokenNameId;
             }
         }
 
