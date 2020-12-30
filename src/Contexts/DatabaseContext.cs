@@ -11,6 +11,8 @@ namespace ApiInABox.Contexts
 {
     public class DatabaseContext : DbContext
     {
+        public string TokenNameId { get; set; } = "sys";
+
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         { }
 

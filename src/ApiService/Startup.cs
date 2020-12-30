@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using ApiInABox.Contexts;
 using ApiInABox.Exceptions;
 using ApiInABox.Logic;
+using ApiInABox.Middlewares;
 using ApiInABox.Models.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -84,7 +85,9 @@ namespace ApiInABox
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(tokenKeyBytes),
                     ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateAudience = false,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true
                 };
             });
 
@@ -147,6 +150,7 @@ namespace ApiInABox
 
             app.UseAuthentication(); // Must occur before authorization
             app.UseAuthorization();
+            app.UseMiddleware<IdentityMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

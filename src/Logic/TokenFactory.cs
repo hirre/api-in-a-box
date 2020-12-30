@@ -11,7 +11,7 @@ namespace ApiInABox.Logic
 {
     public static class TokenFactory
     {
-        public static string Generate(SecureString secret, string issuer, string audience, 
+        public static string Generate(SecureString secret, string issuer, string audience,
             DateTime expirationDate, Claim[] claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -21,14 +21,14 @@ namespace ApiInABox.Logic
                 Subject = new ClaimsIdentity(claims),
                 Expires = expirationDate,
                 Issuer = issuer,
-                Audience = audience, 
-                SigningCredentials = 
+                Audience = audience,
+                SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecureStringToString(secret))),
                      SecurityAlgorithms.HmacSha256Signature)
             }));
         }
 
-        public static (bool ValidationResult, ClaimsPrincipal ClaimsPrincipal, Exception Exception) Validate(string token, SecureString secret, 
+        public static (bool ValidationResult, ClaimsPrincipal ClaimsPrincipal, Exception Exception) Validate(string token, SecureString secret,
             string issuer, string audience, TokenValidationParameters tvp = null)
         {
             ClaimsPrincipal claimsPrincipal = null;
@@ -46,7 +46,7 @@ namespace ApiInABox.Logic
                         LifetimeValidator = TokenLifetimeValidator.Validate,
                         ValidIssuer = issuer,
                         ValidAudience = audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecureStringToString(secret)))                       
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecureStringToString(secret)))
                     };
 
                 claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, tvp, out SecurityToken validatedToken);
@@ -61,8 +61,19 @@ namespace ApiInABox.Logic
 
         public static string GetClaim(string token, string claimType)
         {
-            return (new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken)
-                    .Claims.First(claim => claim.Type == claimType).Value;
+            try
+            {
+
+                var claimValue = (new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken)
+                        .Claims.First(claim => claim.Type == claimType).Value;
+
+                return claimValue;
+            }
+            catch (Exception)
+            { 
+            }
+
+            return null;
         }
 
         private static string SecureStringToString(SecureString value) 
