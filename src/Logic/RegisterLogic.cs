@@ -4,6 +4,8 @@ using ApiInABox.Models;
 using ApiInABox.Models.Auth;
 using ApiInABox.Models.RequestObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using NETCore.MailKit.Core;
 using System;
 using System.Threading.Tasks;
 
@@ -11,6 +13,15 @@ namespace ApiInABox.Logic
 {
     public class RegisterLogic
     {
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
+
+        public RegisterLogic(IEmailService emailService, IConfiguration configuration)
+        {
+            _emailService = emailService;
+            _configuration = configuration;
+        }
+
         public async Task<User> CreateUser(DatabaseContext dbContext, RegisterUserRequest regUserObj)
         {
             var loadedUser = await dbContext.Users
@@ -34,6 +45,12 @@ namespace ApiInABox.Logic
 
             if (res == 0)
                 throw new FailedSaveException("Failed saving user");
+
+            var msg = $"<h2 style=\"font-family:verdana;\">Registration confirmation</h2>" +
+                $"<p style=\"font-family:verdana;\">Please click on <a href=\"{_configuration["DomainNameURL"]}/api/Register/ActivateUser?u={newUser.TemporarySecret}\">activate</a> " +
+                $"to complete your registration.</p>";
+
+            await _emailService.SendAsync(newUser.ActivationEmail, "Activate account", msg, true);
 
             return newUser;
         }

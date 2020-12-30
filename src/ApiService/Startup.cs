@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using NETCore.MailKit.Extensions;
+using NETCore.MailKit.Infrastructure.Internal;
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 
@@ -31,6 +33,21 @@ namespace ApiInABox
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMailKit(optionBuilder =>
+            {                
+                optionBuilder.UseMailKit(new MailKitOptions()
+                {
+                    Server = Configuration["MailSetting:Host"],
+                    Port = Convert.ToInt32(Configuration["MailSetting:Port"]),
+                    SenderName = Configuration["MailSetting:SenderName"],
+                    SenderEmail = Configuration["MailSetting:SenderEmail"],
+                    Account = Configuration["MailSetting:Account"],
+                    Password = Configuration["MailSetting:Password"],
+                    // enable ssl or tls
+                    Security = true
+                });
+            });
+
             services.AddDbContext<DatabaseContext>(options =>
                     options.UseNpgsql(Configuration["ConnectionString"], op => 
                     { 
@@ -51,7 +68,7 @@ namespace ApiInABox
 
             services.AddSingleton(x => secret);
             services.AddSingleton<AuthLogic>();
-            services.AddSingleton<RegisterLogic>();
+            services.AddScoped<RegisterLogic>();
 
             services.AddAuthentication(x =>
             {

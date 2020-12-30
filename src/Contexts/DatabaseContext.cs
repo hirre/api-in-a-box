@@ -64,6 +64,11 @@ namespace ApiInABox.Contexts
                 .IsUnique();
 
             builder.Entity<User>()
+                .HasMany(u => u.Roles)
+                .WithOne(r => r.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<User>()
                 .UseXminAsConcurrencyToken();
 
             builder.Entity<Role>()

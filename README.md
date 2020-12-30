@@ -8,7 +8,7 @@ Features include:
 - Authentication and authorization
 - ORM EF Core + PostgreSql backend along with concurrency handling
 - API key registration
-- User registration and activation
+- User registration and mail activation support
 - NodaTime support
 - HTTPS (TLS)
 - Logging (file and console) with Serilog

@@ -20,6 +20,5 @@ namespace ApiInABox.Models
         public Instant UpdatedDate { get; set; }
 
         public uint xmin { get; set; }
-
     }
 }

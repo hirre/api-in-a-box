@@ -16,7 +16,7 @@ namespace ApiInABox.Controllers
     {
         private readonly ILogger<RegisterController> _logger;
         private readonly DatabaseContext _dbContext;
-        private readonly RegisterLogic _registerLogic;
+        private readonly RegisterLogic _registerLogic;        
 
         public RegisterController(DatabaseContext dbContext, RegisterLogic registerLogic, 
             ILogger<RegisterController> logger)
@@ -33,7 +33,7 @@ namespace ApiInABox.Controllers
             return await _registerLogic.CreateUser(_dbContext, regUserObj);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("ActivateUser")]
         public async Task<User> CreateUser([FromQuery] ActivateUserRequest activateUserObj)
         {
