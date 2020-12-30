@@ -1,4 +1,4 @@
-using System;
+using NodaTime;
 
 namespace ApiInABox.Models.Auth
 {
@@ -6,6 +6,6 @@ namespace ApiInABox.Models.Auth
     {
         public string Name { get; set; }
         public string Key { get; set; }
-        public DateTimeOffset ExpirationDate { get; set; }
+        public Instant ExpirationDate { get; set; }
     }
 }

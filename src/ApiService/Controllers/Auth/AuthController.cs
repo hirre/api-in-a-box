@@ -34,7 +34,7 @@ namespace ApiInABox.Controllers.Auth
         }
 
         [HttpPost]
-        [Route("ApiKey")]
+        [Route("Api")]
         public async Task<string> AuthApi([FromBody] AuthApiRequest authApiKeyRequestObj)
         {
             return await _authLogic.AuthApi(_dbContext, _secret, authApiKeyRequestObj);

@@ -3,6 +3,7 @@ using ApiInABox.Exceptions;
 using ApiInABox.Models.Auth;
 using ApiInABox.Models.RequestObjects;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace ApiInABox.Logic
 
             var claims = new Claim[]
             {
-                new Claim("id", "" + loadedUser.Id),
+                new Claim(ClaimTypes.NameIdentifier, "" + loadedUser.UserName),
                 new Claim(ClaimTypes.Role, roles)
             };
 
@@ -48,14 +49,17 @@ namespace ApiInABox.Logic
                             .FirstOrDefaultAsync(x => x.Name == authApiKeyRequestObj.Name);
 
             if (loadedApiKey == null)
-                throw new AccessDeniedException();
+                throw new AccessDeniedException();            
 
             if (!BCrypt.Net.BCrypt.Verify(authApiKeyRequestObj.Key, loadedApiKey.Key))
                 throw new AccessDeniedException();
 
+            if (Instant.FromDateTimeUtc(DateTime.UtcNow) > loadedApiKey.ExpirationDate)
+                throw new AccessDeniedException("API key has expired");
+
             var claims = new Claim[]
             {
-                new Claim(ClaimTypes.Authentication, loadedApiKey.Name),
+                new Claim(ClaimTypes.NameIdentifier, loadedApiKey.Name),
                 new Claim(ClaimTypes.Expiration, loadedApiKey.ExpirationDate.ToString()),
                 new Claim(ClaimTypes.Role, "api")
             };

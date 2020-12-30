@@ -118,7 +118,7 @@ namespace ApiInABox.Logic
             {
                 Name = regApiKeyObj.Name,
                 Key = BCrypt.Net.BCrypt.HashPassword(apiKeyStr, BCrypt.Net.BCrypt.GenerateSalt()),
-                ExpirationDate = DateTimeOffset.UtcNow.AddYears(1)
+                ExpirationDate = Instant.FromDateTimeUtc(DateTime.UtcNow.AddYears(1))
             };
 
             await dbContext.ApiKeys.AddAsync(newApiKey);
