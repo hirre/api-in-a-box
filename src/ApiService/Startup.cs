@@ -34,6 +34,8 @@ namespace ApiInABox
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddMailKit(optionBuilder =>
             {                
                 optionBuilder.UseMailKit(new MailKitOptions()
@@ -108,6 +110,12 @@ namespace ApiInABox
 #elif RELEASE
             dbContext.Database.Migrate();
 #endif
+
+            app.UseCors(policy =>
+            {
+                policy.AllowAnyOrigin();
+                policy.AllowAnyHeader();
+            });
 
             app.Use(next => async context => 
             {
