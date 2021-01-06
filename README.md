@@ -15,9 +15,16 @@ Features include:
 - and more...
 
 ## Create a self signed certificate
-Guide: https://docs.microsoft.com/en-us/dotnet/core/additional-tools/self-signed-certificates-guide
 
-Export the certificate to a file called "ServerCertificate.pfx" ("https_certificate" field in "src/ApiService/appsettings.json") and put it in the "src/ApiService/" folder (it will automatically be copied to the binary output folder). Set the "https_certificate_password" field to your password and change the token key to something unique and hard to guess.
+1) Install [OpenSSL](https://www.openssl.org)
+
+2) Run and enter a key/certificate password along with other credentials:
+```
+openssl req -x509 -newkey rsa:4096 -keyout privateKey.pem -out certificate.pem -days 10000
+openssl pkcs12 -export -out ServerCertificate.pfx -inkey privateKey.pem -in certificate.pem
+```
+
+Put "ServerCertificate.pfx" ("https_certificate" field in "src/ApiService/appsettings.json") in the "src/ApiService/" folder (it will automatically be copied to the binary output folder). Set the "https_certificate_password" field to your password and change the token key to something unique and hard to guess.
 
 ## PostgreSql
 Download and install PostgreSql: https://www.postgresql.org/download/
