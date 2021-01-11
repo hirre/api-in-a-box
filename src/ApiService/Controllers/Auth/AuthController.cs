@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ApiInABox.Contexts;
 using ApiInABox.Logic;
@@ -32,12 +33,13 @@ namespace ApiInABox.Controllers.Auth
         public async Task AuthUser([FromBody] AuthUserRequest authUserRequestObj)
         {
             var token = await _authLogic.AuthUser(_dbContext, _secret, authUserRequestObj);
-            
+
             var options = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true, 
-                SameSite = SameSiteMode.Strict
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddHours(1)
             };
             
             Response.Cookies.Append("Auth", token, options);
