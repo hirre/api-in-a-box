@@ -3,6 +3,7 @@ using ApiInABox.Contexts;
 using ApiInABox.Logic;
 using ApiInABox.Models.Auth;
 using ApiInABox.Models.RequestObjects;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -28,9 +29,18 @@ namespace ApiInABox.Controllers.Auth
 
         [HttpPost]
         [Route("User")]
-        public async Task<string> AuthUser([FromBody] AuthUserRequest authUserRequestObj)
+        public async Task AuthUser([FromBody] AuthUserRequest authUserRequestObj)
         {
-            return await _authLogic.AuthUser(_dbContext, _secret, authUserRequestObj);
+            var token = await _authLogic.AuthUser(_dbContext, _secret, authUserRequestObj);
+            
+            var options = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, 
+                SameSite = SameSiteMode.Strict
+            };
+            
+            Response.Cookies.Append("Auth", token, options);
         }
 
         [HttpPost]

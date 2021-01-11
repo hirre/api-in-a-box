@@ -3,6 +3,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using ApiInABox.Contexts;
 using ApiInABox.Exceptions;
 using ApiInABox.Logic;
@@ -90,6 +91,14 @@ namespace ApiInABox
                     ValidateAudience = false,
                     RequireExpirationTime = true,
                     ValidateLifetime = true
+                };
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["Auth"];
+                        return Task.CompletedTask;
+                    },
                 };
             });
 
