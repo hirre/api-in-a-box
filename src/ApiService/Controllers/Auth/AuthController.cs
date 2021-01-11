@@ -47,9 +47,19 @@ namespace ApiInABox.Controllers.Auth
 
         [HttpPost]
         [Route("Api")]
-        public async Task<string> AuthApi([FromBody] AuthApiRequest authApiKeyRequestObj)
+        public async Task AuthApi([FromBody] AuthApiRequest authApiKeyRequestObj)
         {
-            return await _authLogic.AuthApi(_dbContext, _secret, authApiKeyRequestObj);
+            var token = await _authLogic.AuthApi(_dbContext, _secret, authApiKeyRequestObj);
+
+            var options = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(1)
+            };
+
+            Response.Cookies.Append("Auth", token, options);
         }
     }
 }
