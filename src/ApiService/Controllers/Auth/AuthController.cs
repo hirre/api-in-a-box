@@ -41,7 +41,7 @@ namespace ApiInABox.Controllers.Auth
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddHours(1)
             };
-            
+
             Response.Cookies.Append("Auth", token, options);
         }
 
@@ -60,6 +60,15 @@ namespace ApiInABox.Controllers.Auth
             };
 
             Response.Cookies.Append("Auth", token, options);
+        }
+
+        [HttpPost]
+        [Route("Logout")]
+§        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("Auth");
+
+            return Ok();
         }
     }
 }
