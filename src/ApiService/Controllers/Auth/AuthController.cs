@@ -64,7 +64,7 @@ namespace ApiInABox.Controllers.Auth
 
         [HttpPost]
         [Route("Logout")]
-§        public IActionResult Logout()
+        public IActionResult Logout()
         {
             Response.Cookies.Delete("Auth");
 
