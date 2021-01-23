@@ -38,8 +38,9 @@ namespace ApiInABox.Controllers.Auth
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddHours(1),
+                IsEssential = true
             };
 
             Response.Cookies.Append("Auth", token, options);
@@ -56,7 +57,8 @@ namespace ApiInABox.Controllers.Auth
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(1)
+                Expires = DateTime.UtcNow.AddDays(1),
+                IsEssential = true
             };
 
             Response.Cookies.Append("Auth", token, options);
