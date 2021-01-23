@@ -123,8 +123,9 @@ namespace ApiInABox
             app.UseCors(policy =>
             {
                 policy.AllowAnyHeader();
-                policy.AllowAnyOrigin();
                 policy.AllowAnyMethod();
+                policy.AllowCredentials();
+                policy.SetIsOriginAllowed(_ => true);
             });
 
             app.Use(next => async context =>
