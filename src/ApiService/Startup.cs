@@ -38,7 +38,7 @@ namespace ApiInABox
             services.AddCors();
 
             services.AddMailKit(optionBuilder =>
-            {                
+            {
                 optionBuilder.UseMailKit(new MailKitOptions()
                 {
                     Server = Configuration["MailSetting:Host"],
@@ -53,8 +53,8 @@ namespace ApiInABox
             });
 
             services.AddDbContext<DatabaseContext>(options =>
-                    options.UseNpgsql(Configuration["ConnectionString"], op => 
-                    { 
+                    options.UseNpgsql(Configuration["ConnectionString"], op =>
+                    {
                         op.UseNodaTime();
                     }));
 
@@ -103,7 +103,7 @@ namespace ApiInABox
             });
 
             services.AddControllers()
-                    .AddJsonOptions(options => 
+                    .AddJsonOptions(options =>
                     {
                         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                         options.JsonSerializerOptions.WriteIndented = true;
@@ -124,9 +124,11 @@ namespace ApiInABox
             {
                 policy.AllowAnyOrigin();
                 policy.AllowAnyHeader();
+                policy.AllowCredentials();
+                policy.AllowAnyMethod();
             });
 
-            app.Use(next => async context => 
+            app.Use(next => async context =>
             {
                 try
                 {
@@ -149,13 +151,13 @@ namespace ApiInABox
                         exMsg += " " + ie.Message;
                         ie = ie.InnerException;
                     }
-                    
-                    var exObj = new 
-                    { 
-                        Exception = exMsg,   
+
+                    var exObj = new
+                    {
+                        Exception = exMsg,
                         HttpStatusCode = statusCode
                     };
-                    
+
                     var data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(exObj));
                     context.Response.ContentType = "application/json";
                     await context.Response.Body.WriteAsync(data.AsMemory(0, data.Length));
