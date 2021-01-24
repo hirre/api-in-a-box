@@ -12,6 +12,7 @@ Features include:
 - NodaTime support
 - HTTPS (TLS)
 - Logging (file and console) with Serilog
+- Works well with [Web App In A Box](https://github.com/hirre/webapp-in-a-box)
 - and more...
 
 ## Create a self signed certificate
