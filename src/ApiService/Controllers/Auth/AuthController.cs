@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using ApiInABox.Contexts;
+using ApiInABox.Exceptions;
 using ApiInABox.Logic;
 using ApiInABox.Models.Auth;
 using ApiInABox.Models.RequestObjects;
@@ -36,9 +37,9 @@ namespace ApiInABox.Controllers.Auth
         [Route("User")]
         public async Task AuthUser([FromBody] AuthUserRequest authUserRequestObj)
         {
-            var token = await _authLogic.AuthUser(_dbContext, _secret, authUserRequestObj);
+            var accessToken = await _authLogic.AuthUser(_dbContext, _secret, authUserRequestObj);
 
-            var options = new CookieOptions
+            var accessTokenOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
@@ -47,7 +48,57 @@ namespace ApiInABox.Controllers.Auth
                 IsEssential = true
             };
 
-            Response.Cookies.Append("Auth", token, options);
+            var refreshTokenOptions = new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddHours(1),
+                IsEssential = true
+            };
+
+            var refreshToken = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
+
+            Response.Cookies.Append("access_token", accessToken, accessTokenOptions);
+            Response.Cookies.Append("refresh_token", refreshToken, refreshTokenOptions);
+            await _cache.SetStringAsync("Refresh:" + refreshToken, accessToken,
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+                });
+        }
+
+        [HttpPost]
+        [Route("User/Refresh")]
+        public async Task<IActionResult> RefreshAuth()
+        {
+            if (Request.Cookies.ContainsKey("refresh_token"))
+            {
+                var refreshToken = Request.Cookies["refresh_token"];
+                var accessToken = await _cache.GetStringAsync("Refresh:" + refreshToken);
+
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    var accessTokenOptions = new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.None,
+                        Expires = DateTime.UtcNow.AddHours(1),
+                        IsEssential = true
+                    };
+
+                    var refreshTokenOptions = new CookieOptions
+                    {
+                        Expires = DateTime.UtcNow.AddHours(1),
+                        IsEssential = true
+                    };
+
+                    Response.Cookies.Append("access_token", accessToken, accessTokenOptions);
+                    Response.Cookies.Append("refresh_token", refreshToken, refreshTokenOptions);
+
+                    return Ok();
+                }
+            }
+
+            throw new AccessDeniedException();
         }
 
         [HttpPost]
@@ -65,24 +116,44 @@ namespace ApiInABox.Controllers.Auth
                 IsEssential = true
             };
 
-            Response.Cookies.Append("Auth", token, options);
+            Response.Cookies.Append("access_token", token, options);
         }
 
         [HttpPost]
         [Route("Logout")]
         public async Task<IActionResult> Logout()
         {
-            if (Request.Cookies.ContainsKey("Auth"))
+            if (Request.Cookies.ContainsKey("access_token"))
             {
-                var authCookie = Request.Cookies["Auth"];
+                var accessToken = Request.Cookies["access_token"];
 
-                await _cache.SetStringAsync(authCookie, "X",
+                await _cache.SetStringAsync(accessToken, "X",
                     new DistributedCacheEntryOptions
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(2)
                     });
 
-                Response.Cookies.Delete("Auth");
+                Response.Cookies.Delete("access_token");
+            }
+
+            if (Request.Cookies.ContainsKey("refresh_token"))
+            {
+                var refreshToken = Request.Cookies["refresh_token"];
+
+                await _cache.SetStringAsync(refreshToken, "X",
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(2)
+                    });
+
+                Response.Cookies.Delete("refresh_token");
+
+                var refreshTokenKey = "Refresh:" + refreshToken;
+
+                if (!string.IsNullOrEmpty(await _cache.GetStringAsync(refreshTokenKey)))
+                {
+                    await _cache.RemoveAsync(refreshTokenKey);
+                }
             }
 
             return Ok();
