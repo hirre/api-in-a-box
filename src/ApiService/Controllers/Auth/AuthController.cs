@@ -6,6 +6,7 @@ using ApiInABox.Models.Auth;
 using ApiInABox.Models.RequestObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace ApiInABox.Controllers.Auth
@@ -18,10 +19,13 @@ namespace ApiInABox.Controllers.Auth
         private readonly DatabaseContext _dbContext;
         private readonly Secret _secret;
         private readonly AuthLogic _authLogic;
+        private readonly IDistributedCache _cache;
 
-        public AuthController(DatabaseContext dbContext, Secret secret, AuthLogic authLogic,
+        public AuthController(DatabaseContext dbContext, IDistributedCache cache,
+            Secret secret, AuthLogic authLogic,
             ILogger<AuthController> logger)
         {
+            _cache = cache;
             _secret = secret;
             _logger = logger;
             _dbContext = dbContext;
@@ -66,9 +70,20 @@ namespace ApiInABox.Controllers.Auth
 
         [HttpPost]
         [Route("Logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            Response.Cookies.Delete("Auth");
+            if (Request.Cookies.ContainsKey("Auth"))
+            {
+                var authCookie = Request.Cookies["Auth"];
+
+                await _cache.SetStringAsync(authCookie, "X",
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(2)
+                    });
+
+                Response.Cookies.Delete("Auth");
+            }
 
             return Ok();
         }

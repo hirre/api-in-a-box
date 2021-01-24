@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -36,6 +37,7 @@ namespace ApiInABox
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddDistributedMemoryCache();
 
             services.AddMailKit(optionBuilder =>
             {
@@ -47,7 +49,7 @@ namespace ApiInABox
                     SenderEmail = Configuration["MailSetting:SenderEmail"],
                     Account = Configuration["MailSetting:Account"],
                     Password = Configuration["MailSetting:Password"],
-                    // enable ssl or tls
+                    // Enable ssl or tls
                     Security = true
                 });
             });
@@ -112,7 +114,8 @@ namespace ApiInABox
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext dbContext)
+        public void Configure(IApplicationBuilder app,
+            IWebHostEnvironment env, DatabaseContext dbContext, IDistributedCache cache)
         {
 #if DEBUG
             dbContext.Database.EnsureCreated();
@@ -162,6 +165,22 @@ namespace ApiInABox
                     context.Response.ContentType = "application/json";
                     await context.Response.Body.WriteAsync(data.AsMemory(0, data.Length));
                 }
+            });
+
+            app.Use(next => async context =>
+            {
+                if (context.Request.Cookies.ContainsKey("Auth"))
+                {
+                    var authCookie = context.Request.Cookies["Auth"];
+
+                    if (!string.IsNullOrEmpty(await cache.GetStringAsync(authCookie)))
+                    {
+                        // Token destructed (logged out etc)
+                        throw new AccessDeniedException("Token has been invalidated.");
+                    }
+                }
+
+                await next.Invoke(context);
             });
 
             app.UseHttpsRedirection();
