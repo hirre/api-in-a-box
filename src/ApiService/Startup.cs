@@ -171,9 +171,9 @@ namespace ApiInABox
             {
                 if (context.Request.Cookies.ContainsKey("access_token"))
                 {
-                    var authCookie = context.Request.Cookies["access_token"];
+                    var authToken = context.Request.Cookies["access_token"];
 
-                    if (!string.IsNullOrEmpty(await cache.GetStringAsync(authCookie)))
+                    if (!string.IsNullOrEmpty(await cache.GetStringAsync(authToken)))
                     {
                         // Token destructed (logged out etc)
                         throw new AccessDeniedException("Access token has been invalidated.");
@@ -182,9 +182,9 @@ namespace ApiInABox
 
                 if (context.Request.Cookies.ContainsKey("refresh_token"))
                 {
-                    var refreshCookie = context.Request.Cookies["refresh_token"];
+                    var refreshToken = context.Request.Cookies["refresh_token"];
 
-                    if (!string.IsNullOrEmpty(await cache.GetStringAsync(refreshCookie)))
+                    if (!string.IsNullOrEmpty(await cache.GetStringAsync(refreshToken)))
                     {
                         // Token destructed (logged out etc)
                         throw new AccessDeniedException("Refresh token has been invalidated.");

@@ -72,7 +72,8 @@ namespace ApiInABox.Controllers.Auth
             if (Request.Cookies.ContainsKey("refresh_token"))
             {
                 var refreshToken = Request.Cookies["refresh_token"];
-                var accessToken = await _cache.GetStringAsync("Refresh:" + refreshToken);
+                var refreshTokenKey = "Refresh:" + refreshToken;
+                var accessToken = await _cache.GetStringAsync(refreshTokenKey);
 
                 if (!string.IsNullOrEmpty(accessToken))
                 {
@@ -91,8 +92,19 @@ namespace ApiInABox.Controllers.Auth
                         IsEssential = true
                     };
 
+                    var newRefreshToken = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
+
+                    // Remove old token from cache
+                    await _cache.RemoveAsync(refreshTokenKey);
+
+                    // Mark old token as disposed
+                    await _cache.SetStringAsync(refreshToken, "X");
+
+                    // Add new refresh token
+                    await _cache.SetStringAsync("Refresh:" + newRefreshToken, accessToken);
+
                     Response.Cookies.Append("access_token", accessToken, accessTokenOptions);
-                    Response.Cookies.Append("refresh_token", refreshToken, refreshTokenOptions);
+                    Response.Cookies.Append("refresh_token", newRefreshToken, refreshTokenOptions);
 
                     return Ok();
                 }
