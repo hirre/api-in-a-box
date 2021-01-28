@@ -175,6 +175,8 @@ namespace ApiInABox
 
                     if (!string.IsNullOrEmpty(await cache.GetStringAsync(authToken)))
                     {
+                        context.Response.Cookies.Delete("access_token");
+
                         // Token destructed (logged out etc)
                         throw new AccessDeniedException("Access token has been invalidated.");
                     }
@@ -186,6 +188,8 @@ namespace ApiInABox
 
                     if (!string.IsNullOrEmpty(await cache.GetStringAsync(refreshToken)))
                     {
+                        context.Response.Cookies.Delete("refresh_token");
+
                         // Token destructed (logged out etc)
                         throw new AccessDeniedException("Refresh token has been invalidated.");
                     }

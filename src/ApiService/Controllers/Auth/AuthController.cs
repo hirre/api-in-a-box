@@ -43,7 +43,7 @@ namespace ApiInABox.Controllers.Auth
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.None,
+                SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddHours(1),
                 IsEssential = true
             };
@@ -81,7 +81,7 @@ namespace ApiInABox.Controllers.Auth
                     {
                         HttpOnly = true,
                         Secure = true,
-                        SameSite = SameSiteMode.None,
+                        SameSite = SameSiteMode.Strict,
                         Expires = DateTime.UtcNow.AddHours(1),
                         IsEssential = true
                     };
