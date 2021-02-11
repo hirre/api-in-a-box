@@ -160,9 +160,11 @@ namespace ApiInABox.Controllers.Auth
 
                 Response.Cookies.Delete("refresh_token");
 
-                if (!string.IsNullOrEmpty(await _cache.GetStringAsync(refreshToken)))
+                var refreshTokenKey = "Refresh:" + refreshToken;
+
+                if (!string.IsNullOrEmpty(await _cache.GetStringAsync(refreshTokenKey)))
                 {
-                    await _cache.RemoveAsync(refreshToken);
+                    await _cache.RemoveAsync(refreshTokenKey);
                 }
             }
 
