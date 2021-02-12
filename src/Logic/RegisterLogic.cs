@@ -49,7 +49,7 @@ namespace ApiInABox.Logic
 
             var msg = $"<h2 style=\"font-family:verdana;\">Registration confirmation</h2>" +
                 $"<p style=\"font-family:verdana;\">" + $"Username: {newUser.UserName}<br><br>" +
-                $"Please click on <a href=\"{_configuration["DomainNameURL"]}/api/Register/ActivateUser/{newUser.TemporarySecret}\">activate</a> " +
+                $"Please click on <a href=\"{_configuration["DomainNameURL"]}/activation?u={newUser.TemporarySecret}\">activate</a> " +
                 $"to complete your registration.<br><br>Thank you!</p>";
 
             await _emailService.SendAsync(newUser.ActivationEmail, "Activate account", msg, true);
@@ -74,7 +74,7 @@ namespace ApiInABox.Logic
 
             var msg = $"<h2 style=\"font-family:verdana;\">Registration confirmation</h2>" +
                 $"<p style=\"font-family:verdana;\">" + $"Username: {loadedUser.UserName}<br><br>" +
-                $"Please click on <a href=\"{_configuration["DomainNameURL"]}/api/Register/ActivateUser/{loadedUser.TemporarySecret}\">activate</a> " +
+                $"Please click on <a href=\"{_configuration["DomainNameURL"]}/activation?u={loadedUser.TemporarySecret}\">activate</a> " +
                 $"to complete your registration.<br><br>Thank you!</p>";
 
             await _emailService.SendAsync(loadedUser.ActivationEmail, "Activate account", msg, true);
@@ -94,7 +94,7 @@ namespace ApiInABox.Logic
                 throw new BadRequestException("Activation period (24 hours) has passed, request a new activation");
 
             loadedUser.Activated = true;
-            loadedUser.TemporarySecret = null;            
+            loadedUser.TemporarySecret = null;
 
             var res = await dbContext.SaveChangesAsync();
 
