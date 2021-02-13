@@ -6,6 +6,7 @@ The goal of this project is to have a "ready to go" API back-end service with al
 Features include:
 - Token generation and validation 
 - Authentication and authorization
+- ReCaptcha support
 - ORM EF Core + PostgreSql backend along with concurrency handling
 - API key registration
 - User registration and mail activation support
