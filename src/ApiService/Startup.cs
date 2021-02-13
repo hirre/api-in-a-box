@@ -37,6 +37,7 @@ namespace ApiInABox
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddHttpClient();
             services.AddDistributedMemoryCache();
 
             services.AddMailKit(optionBuilder =>

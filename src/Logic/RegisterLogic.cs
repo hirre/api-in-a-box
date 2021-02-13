@@ -9,6 +9,9 @@ using NETCore.MailKit.Core;
 using NodaTime;
 using System;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace ApiInABox.Logic
 {
@@ -16,11 +19,14 @@ namespace ApiInABox.Logic
     {
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public RegisterLogic(IEmailService emailService, IConfiguration configuration)
+        public RegisterLogic(IEmailService emailService, IConfiguration configuration, 
+            IHttpClientFactory httpClientFactory)
         {
             _emailService = emailService;
             _configuration = configuration;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<User> CreateUser(DatabaseContext dbContext, RegisterUserRequest regUserObj)
@@ -30,6 +36,19 @@ namespace ApiInABox.Logic
 
             if (loadedUser != null)
                 throw new ObjectExistsException("Username/e-mail already exists");
+
+            if (string.IsNullOrEmpty(regUserObj.ReCaptcha))
+                throw new AccessDeniedException("ReCaptcha not set!");
+
+            // Check reCaptcha
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var response = await httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify", 
+                new StringContent($"secret=${_configuration["ReCaptchaServerKey"]}&response=${regUserObj.ReCaptcha}", 
+                    Encoding.UTF8, "application/x-www-form-urlencoded"));
+
+            if (!response.IsSuccessStatusCode)
+                throw new AccessDeniedException("ReCaptcha failed!");
 
             var newUser = new User
             {

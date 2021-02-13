@@ -9,6 +9,8 @@ namespace ApiInABox.Models.RequestObjects
         [Required]
         public string Password { get; set; }
         [Required]
-        public string ActivationEmail { get; set; }       
+        public string ActivationEmail { get; set; }
+        [Required]
+        public string ReCaptcha { get; set; }
     }
 }
