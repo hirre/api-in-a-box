@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.10.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.1" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.3" NoWarn="NU1605" />
     <PackageReference Include="MimeKit" Version="2.10.1" />
     <PackageReference Include="NETCore.MailKit" Version="2.0.3" />
     <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.0.0" />
