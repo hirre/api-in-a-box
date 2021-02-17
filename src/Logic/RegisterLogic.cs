@@ -1,4 +1,20 @@
-﻿using ApiInABox.Contexts;
+﻿/**
+	Copyright 2021 Hirad Asadi (API in a Box)
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
+using ApiInABox.Contexts;
 using ApiInABox.Exceptions;
 using ApiInABox.Models;
 using ApiInABox.Models.Auth;
@@ -11,7 +27,6 @@ using System;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 
 namespace ApiInABox.Logic
 {
@@ -21,7 +36,7 @@ namespace ApiInABox.Logic
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public RegisterLogic(IEmailService emailService, IConfiguration configuration, 
+        public RegisterLogic(IEmailService emailService, IConfiguration configuration,
             IHttpClientFactory httpClientFactory)
         {
             _emailService = emailService;
@@ -29,6 +44,12 @@ namespace ApiInABox.Logic
             _httpClientFactory = httpClientFactory;
         }
 
+        /// <summary>
+        ///     Created the user and checks the Captcha.
+        /// </summary>
+        /// <param name="dbContext">Database context</param>
+        /// <param name="regUserObj">User request object</param>
+        /// <returns>The created user or HTTP error code.</returns>
         public async Task<User> CreateUser(DatabaseContext dbContext, RegisterUserRequest regUserObj)
         {
             var loadedUser = await dbContext.Users
@@ -43,8 +64,8 @@ namespace ApiInABox.Logic
             // Check reCaptcha
             var httpClient = _httpClientFactory.CreateClient();
 
-            var response = await httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify", 
-                new StringContent($"secret=${_configuration["ReCaptchaServerKey"]}&response=${regUserObj.ReCaptcha}", 
+            var response = await httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify",
+                new StringContent($"secret=${_configuration["ReCaptchaServerKey"]}&response=${regUserObj.ReCaptcha}",
                     Encoding.UTF8, "application/x-www-form-urlencoded"));
 
             if (!response.IsSuccessStatusCode)
@@ -76,6 +97,12 @@ namespace ApiInABox.Logic
             return newUser;
         }
 
+        /// <summary>
+        ///     Resends activation e-mail.
+        /// </summary>
+        /// <param name="dbContext">The database context</param>
+        /// <param name="activationEmail">Activation e-mail address</param>
+        /// <returns>The created user or HTTP error code.</returns>
         public async Task<User> ResendActivationEmail(DatabaseContext dbContext, string activationEmail)
         {
             var loadedUser = await dbContext.Users
@@ -101,6 +128,12 @@ namespace ApiInABox.Logic
             return loadedUser;
         }
 
+        /// <summary>
+        ///     Activates a user.
+        /// </summary>
+        /// <param name="dbContext">The database context</param>
+        /// <param name="temporarySecret">Temporary secret code</param>
+        /// <returns>The created user or HTTP error code.</returns>
         public async Task<User> ActivateUser(DatabaseContext dbContext, string temporarySecret)
         {
             var loadedUser = await dbContext.Users
@@ -123,6 +156,12 @@ namespace ApiInABox.Logic
             return loadedUser;
         }
 
+        /// <summary>
+        ///     Creates an API key.
+        /// </summary>
+        /// <param name="dbContext">The database context</param>
+        /// <param name="regApiKeyObj">Register API key requst object</param>
+        /// <returns>The API key or HTTP error code</returns>
         public async Task<ApiKey> CreateApiKey(DatabaseContext dbContext, RegisterApiKeyRequest regApiKeyObj)
         {
             var loadedApiKey = await dbContext.ApiKeys

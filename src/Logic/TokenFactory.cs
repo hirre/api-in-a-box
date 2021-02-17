@@ -1,3 +1,19 @@
+/**
+	Copyright 2021 Hirad Asadi (API in a Box)
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+*/
+
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.InteropServices;
@@ -11,6 +27,15 @@ namespace ApiInABox.Logic
 {
     public static class TokenFactory
     {
+        /// <summary>
+        ///     Creats a new access token.
+        /// </summary>
+        /// <param name="secret">Token secret</param>
+        /// <param name="issuer">Issuer</param>
+        /// <param name="audience">Audience</param>
+        /// <param name="expirationDate">Expiration date</param>
+        /// <param name="claims">List of claims</param>
+        /// <returns>Token or exception</returns>
         public static string Generate(SecureString secret, string issuer, string audience,
             DateTime expirationDate, Claim[] claims)
         {
@@ -28,6 +53,15 @@ namespace ApiInABox.Logic
             }));
         }
 
+        /// <summary>
+        ///     Validates a token.
+        /// </summary>
+        /// <param name="token">The token to be validated</param>
+        /// <param name="secret">Token secret</param>
+        /// <param name="issuer">Issuer</param>
+        /// <param name="audience">Audience</param>
+        /// <param name="tvp">Token validation parameters</param>
+        /// <returns>Tuple containing the validation result (true success, false failure) along with the claims and exception</returns>
         public static (bool ValidationResult, ClaimsPrincipal ClaimsPrincipal, Exception Exception) Validate(string token, SecureString secret,
             string issuer, string audience, TokenValidationParameters tvp = null)
         {
@@ -59,6 +93,12 @@ namespace ApiInABox.Logic
             return (true, claimsPrincipal, null);
         }
 
+        /// <summary>
+        ///     Get claims from a token.
+        /// </summary>
+        /// <param name="token">Token</param>
+        /// <param name="claimType">Claim type</param>
+        /// <returns>Claim value.</returns>
         public static string GetClaim(string token, string claimType)
         {
             try
@@ -70,21 +110,21 @@ namespace ApiInABox.Logic
                 return claimValue;
             }
             catch (Exception)
-            { 
+            {
             }
 
             return null;
         }
 
-        private static string SecureStringToString(SecureString value) 
+        private static string SecureStringToString(SecureString value)
         {
             IntPtr valuePtr = IntPtr.Zero;
-            try 
+            try
             {
                 valuePtr = Marshal.SecureStringToGlobalAllocUnicode(value);
                 return Marshal.PtrToStringUni(valuePtr);
-            } 
-            finally 
+            }
+            finally
             {
                 Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
             }
@@ -93,7 +133,7 @@ namespace ApiInABox.Logic
 
     public static class TokenLifetimeValidator
     {
-        public static bool Validate(DateTime? notBefore, DateTime? expires, 
+        public static bool Validate(DateTime? notBefore, DateTime? expires,
             SecurityToken tokenToValidate, TokenValidationParameters @param)
         {
             return (expires != null && expires > DateTime.UtcNow);
