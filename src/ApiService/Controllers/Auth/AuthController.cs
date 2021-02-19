@@ -59,16 +59,28 @@ namespace ApiInABox.Controllers.Auth
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddHours(1),
                 IsEssential = true
             };
 
+#if DEBUG
+            accessTokenOptions.SameSite = SameSiteMode.None;
+#else
+            accessTokenOptions.SameSite = SameSiteMode.Strict;
+#endif
+
             var refreshTokenOptions = new CookieOptions
             {
                 Expires = DateTime.UtcNow.AddHours(1),
-                IsEssential = true
+                IsEssential = true,
+                Secure = true
             };
+
+#if DEBUG
+            refreshTokenOptions.SameSite = SameSiteMode.None;
+#else
+            refreshTokenOptions.SameSite = SameSiteMode.Strict;
+#endif
 
             var refreshToken = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
 
@@ -92,22 +104,45 @@ namespace ApiInABox.Controllers.Auth
                 var refreshTokenKey = "Refresh:" + refreshToken;
                 var accessToken = await _cache.GetStringAsync(refreshTokenKey);
 
+                if (!string.IsNullOrEmpty(await _cache.GetStringAsync(refreshToken)))
+                {
+                    // Token destructed (logged out etc)
+                    throw new AccessDeniedException("Refresh token has been invalidated.");
+                }
+
                 if (!string.IsNullOrEmpty(accessToken))
                 {
+                    if (!string.IsNullOrEmpty(await _cache.GetStringAsync(accessToken)))
+                    {
+                        // Token destructed (logged out etc)
+                        throw new AccessDeniedException("Access token has been invalidated.");
+                    }
+
                     var accessTokenOptions = new CookieOptions
                     {
                         HttpOnly = true,
                         Secure = true,
-                        SameSite = SameSiteMode.Strict,
                         Expires = DateTime.UtcNow.AddHours(1),
                         IsEssential = true
                     };
+#if DEBUG
+                    accessTokenOptions.SameSite = SameSiteMode.None;
+#else
+                    accessTokenOptions.SameSite = SameSiteMode.Strict;
+#endif
 
                     var refreshTokenOptions = new CookieOptions
                     {
                         Expires = DateTime.UtcNow.AddHours(1),
-                        IsEssential = true
+                        IsEssential = true,
+                        Secure = true
                     };
+
+#if DEBUG
+                    refreshTokenOptions.SameSite = SameSiteMode.None;
+#else
+                    refreshTokenOptions.SameSite = SameSiteMode.Strict;
+#endif
 
                     var newRefreshToken = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
 
@@ -137,17 +172,22 @@ namespace ApiInABox.Controllers.Auth
         {
             var token = await _authLogic.AuthApi(_dbContext, _secret, authApiKeyRequestObj);
 
-            var options = new CookieOptions
+            var accessTokenOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddDays(1),
                 IsEssential = true
             };
 
+#if DEBUG
+            accessTokenOptions.SameSite = SameSiteMode.None;
+#else
+            accessTokenOptions.SameSite = SameSiteMode.Strict;
+#endif
+
             // Set access token in cookie
-            Response.Cookies.Append("access_token", token, options);
+            Response.Cookies.Append("access_token", token, accessTokenOptions);
         }
 
         [HttpPost]

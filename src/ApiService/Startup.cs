@@ -170,6 +170,13 @@ namespace ApiInABox
 
             app.Use(next => async context =>
             {
+                if (context.Request.Path.ToString().ToLowerInvariant().Contains("/api/auth") ||
+                    context.Request.Path.ToString().ToLowerInvariant().Contains("/api/register"))
+                {
+                    await next.Invoke(context);
+                    return;
+                }
+
                 if (context.Request.Cookies.ContainsKey("access_token"))
                 {
                     var authToken = context.Request.Cookies["access_token"];
