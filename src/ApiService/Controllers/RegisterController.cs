@@ -56,6 +56,13 @@ namespace ApiInABox.Controllers
             return await _registerLogic.ActivateUser(_dbContext, temporarySecret);
         }
 
+        [HttpPost]
+        [Route("ResetPassword")]
+        public async Task<User> ResetPassword([FromBody] ResetPasswordRequest rpr)
+        {
+            return await _registerLogic.ResetPassword(_dbContext, rpr);
+        }
+
         [HttpGet]
         [Route("ResendActivationEmail/{activationEmail}")]
         public async Task<User> ResendActivationEmail(string activationEmail)

@@ -47,7 +47,7 @@ namespace ApiInABox.Logic
         /// <summary>
         ///     Created the user and checks the Captcha.
         /// </summary>
-        /// <param name="dbContext">Database context</param>
+        /// <param name="dbContext">The database context</param>
         /// <param name="regUserObj">User request object</param>
         /// <returns>The created user or HTTP error code.</returns>
         public async Task<User> CreateUser(DatabaseContext dbContext, RegisterUserRequest regUserObj)
@@ -98,6 +98,29 @@ namespace ApiInABox.Logic
         }
 
         /// <summary>
+        ///     Reset password.
+        /// </summary>
+        /// <param name="dbContext">The database context</param>
+        /// <param name="rpr">Request object</param>
+        /// <returns></returns>
+        public async Task<User> ResetPassword(DatabaseContext dbContext, ResetPasswordRequest rpr)
+        {
+            var loadedUser = await dbContext.Users
+                .FirstOrDefaultAsync(x => x.TemporarySecret == rpr.TemporaryCode);
+
+            if (loadedUser == null)
+                throw new ObjectNotExistsException("User doesn't exist");
+
+            loadedUser.TemporarySecret = null;
+            loadedUser.Password = BCrypt.Net.BCrypt.HashPassword(rpr.NewPassword,
+                BCrypt.Net.BCrypt.GenerateSalt());
+
+            await dbContext.SaveChangesAsync();
+
+            return loadedUser;
+        }
+
+        /// <summary>
         ///     Resends activation e-mail.
         /// </summary>
         /// <param name="dbContext">The database context</param>
@@ -106,10 +129,13 @@ namespace ApiInABox.Logic
         public async Task<User> ResendActivationEmail(DatabaseContext dbContext, string activationEmail)
         {
             var loadedUser = await dbContext.Users
-                .FirstOrDefaultAsync(x => x.ActivationEmail == activationEmail && !x.Activated);
+                .FirstOrDefaultAsync(x => x.ActivationEmail == activationEmail);
 
             if (loadedUser == null)
-                throw new ObjectNotExistsException("E-mail doesn't exist");
+                throw new ObjectNotExistsException("User doesn't exist");
+
+            var msg = "";
+            var title = "";
 
             loadedUser.TemporarySecret = $"{Guid.NewGuid()}{Guid.NewGuid()}".Replace("-", "");
 
@@ -118,12 +144,26 @@ namespace ApiInABox.Logic
             if (res == 0)
                 throw new FailedSaveException("Failed saving user");
 
-            var msg = $"<h2 style=\"font-family:verdana;\">Registration confirmation</h2>" +
-                $"<p style=\"font-family:verdana;\">" + $"Username: {loadedUser.UserName}<br><br>" +
-                $"Please click on <a href=\"{_configuration["DomainNameURL"]}/activation?u={loadedUser.TemporarySecret}\">activate</a> " +
-                $"to complete your registration.<br><br>Thank you!</p>";
+            if (!loadedUser.Activated)
+            {
+                msg = $"<h2 style=\"font-family:verdana;\">Registration confirmation</h2>" +
+                    $"<p style=\"font-family:verdana;\">" + $"Username: {loadedUser.UserName}<br><br>" +
+                    $"Please click on <a href=\"{_configuration["DomainNameURL"]}/activation?u={loadedUser.TemporarySecret}\">activate</a> " +
+                    $"to complete your registration.<br><br>Thank you!</p>";
 
-            await _emailService.SendAsync(loadedUser.ActivationEmail, "Activate account", msg, true);
+                title = "Activate account";
+            }
+            else // Reset password
+            {
+                msg = $"<h2 style=\"font-family:verdana;\">Reset password</h2>" +
+                    $"<p style=\"font-family:verdana;\">" + $"Username: {loadedUser.UserName}<br><br>" +
+                    $"Please click on <a href=\"{_configuration["DomainNameURL"]}/resetpassword?u={loadedUser.TemporarySecret}\">reset</a> " +
+                    $"to reset your password.<br><br>Thank you!</p>";
+
+                title = "Reset password";
+            }
+
+            await _emailService.SendAsync(loadedUser.ActivationEmail, title, msg, true);
 
             return loadedUser;
         }
