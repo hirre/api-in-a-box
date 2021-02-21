@@ -157,7 +157,7 @@ namespace ApiInABox.Logic
             {
                 msg = $"<h2 style=\"font-family:verdana;\">Reset password</h2>" +
                     $"<p style=\"font-family:verdana;\">" + $"Username: {loadedUser.UserName}<br><br>" +
-                    $"Please click on <a href=\"{_configuration["DomainNameURL"]}/resetpassword?u={loadedUser.TemporarySecret}\">reset</a> " +
+                    $"Please click <a href=\"{_configuration["DomainNameURL"]}/resetpassword?u={loadedUser.TemporarySecret}\">here</a> " +
                     $"to reset your password.<br><br>Thank you!</p>";
 
                 title = "Reset password";
