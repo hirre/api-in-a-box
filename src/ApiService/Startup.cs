@@ -118,9 +118,8 @@ namespace ApiInABox
         public void Configure(IApplicationBuilder app,
             IWebHostEnvironment env, DatabaseContext dbContext, IDistributedCache cache)
         {
-#if DEBUG
             dbContext.Database.EnsureCreated();
-#elif RELEASE
+#if RELEASE
             dbContext.Database.Migrate();
 #endif
 
